@@ -38,9 +38,13 @@ RUN cmake --build build --parallel 4
 # install rules still require it.
 RUN cmake --build build --target fluidsynth --parallel 4 && \
     cmake --install build
-RUN ldconfig
+# Fetched SDL subprojects disable installation of their shared libraries.
+RUN cp -a build/_deps/sdl3-build/libSDL3.so* \
+        build/_deps/sdl3_image-build/libSDL3_image.so* /usr/local/lib/ && \
+    ldconfig
 
-COPY dosbox.conf /etc/dosbox.conf
+ENV XDG_CONFIG_HOME=/config
+COPY dosbox.conf /config/dosbox-automation/dosbox-automation.conf
 
 WORKDIR /work
-ENTRYPOINT ["dosbox", "-conf", "/etc/dosbox.conf"]
+ENTRYPOINT ["dosbox", "--nolocalconf"]

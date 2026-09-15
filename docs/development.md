@@ -37,7 +37,20 @@ some tests are only build checks, as described in their project README.
 ## Interactive automation
 
 `make dosbox-automation` builds the upstream DOSBox Automation source in a
-container. Its bundled config mounts `/work` as drive C. For REST-driven
+container. Its bundled primary config lives at
+`/config/dosbox-automation/dosbox-automation.conf`, permits mounts under `/work`,
+and mounts `/work` as drive C during normal startup. Command-line `-c` commands
+run before the config's autoexec, so mount and select C explicitly in batch
+smoke tests:
+
+```sh
+docker run --rm -e SDL_VIDEODRIVER=dummy -e SDL_AUDIODRIVER=dummy \
+  -v "$PWD/floppies/hello/build:/work" \
+  dosbox-agent-tools/dosbox-automation:latest \
+  -c 'mount c /work' -c 'c:' -c 'HELLO.EXE > CHECK.TXT' -c exit
+```
+
+For REST-driven
 testing, supply a primary configuration enabling the webserver and token file,
 and persist the token directory in a host mount. Follow the module's setup and
 configuration instructions in the root README, then attach with
@@ -64,6 +77,8 @@ Using the available compiler images with Podman under WSL:
   using the actual Turbo Pascal 7 compiler and the resulting DOS executable.
 - `make msfortran` and `make -C floppies/anova test image` passed using
   Microsoft FORTRAN 5.00, six DOS output checks, and FAT12 packaging.
+- The DOSBox Automation container built from source, started headlessly,
+  and ran `HELLO.EXE`, producing the expected `Hello from DOS!` output file.
 - The other included floppy projects passed their `image` targets.
 - DWED's optional `make -C floppies/dwed test` rebuild stalled while running
   the historical help compiler under NTVDM and was stopped. Its `image` target
