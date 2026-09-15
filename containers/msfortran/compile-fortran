@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+source=${1:?usage: compile-fortran SOURCE.FOR [FLAGS]}
+stage=$(mktemp -d)
+cp -a /opt/fortran/. "$stage/"
+for input in /work/*.FOR /work/*.INC; do
+    [ ! -f "$input" ] || cp "$input" "$stage/"
+done
+cd "$stage"
+mkdir -p TMP
+ntvdm -u -r:. -e:include=INCLUDE,init=BIN,path=BIN,lib=LIB,tmp=TMP \
+    'BIN\FL.EXE' /FPc /Ot "$@"
+test -f "${source%.*}.EXE"
+cp "${source%.*}.EXE" /work/

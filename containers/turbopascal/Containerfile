@@ -1,0 +1,11 @@
+FROM localhost/ntvdm:latest
+
+COPY ["third_party/dos_compilers/Borland Turbo Pascal v7", "/opt/dosroot/TP"]
+COPY containers/turbopascal/compile-turbopascal /usr/local/bin/compile-turbopascal
+
+RUN sed -i 's#D:\\TP\\UNITS#C:\\TP\\UNITS#' /opt/dosroot/TP/BIN/TPC.CFG && \
+    ln -s /work /opt/dosroot/WORK && \
+    chmod +x /usr/local/bin/compile-turbopascal
+
+WORKDIR /work
+ENTRYPOINT ["compile-turbopascal"]

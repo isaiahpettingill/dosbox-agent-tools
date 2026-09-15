@@ -1,0 +1,21 @@
+FROM debian:bookworm-slim
+
+ARG FPC_VERSION=3.2.2
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends fp-compiler ca-certificates curl xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /tmp/fpcdos && \
+    curl -fsSL "https://downloads.freepascal.org/fpc/dist/${FPC_VERSION}/x86_64-linux/fpc-${FPC_VERSION}.x86_64-linux.cross.i8086-msdos.tar.xz" -o /tmp/fpcdos.tar.xz && \
+    tar -xJf /tmp/fpcdos.tar.xz -C /tmp/fpcdos --strip-components=1 && \
+    cp -a /tmp/fpcdos/bin/. /usr/bin/ && \
+    cp -a /tmp/fpcdos/lib/. /usr/lib/ && \
+    rm -rf /tmp/fpcdos /tmp/fpcdos.tar.xz
+
+RUN printf '%s\n' '' '#ifdef cpui8086' '-CX' '-XX' '-XP' '-Fu/usr/lib/fpc/$fpcversion/units/$fpctarget/$fpcsubarch-$fpcmemorymodel' '-Fu/usr/lib/fpc/$fpcversion/units/$fpctarget/$fpcsubarch-$fpcmemorymodel/*' '-Fu/usr/lib/fpc/$fpcversion/units/$fpctarget/$fpcsubarch-$fpcmemorymodel/rtl' '#endif' >> /etc/fpc.cfg
+
+RUN ppcross8086 -iV && test -n "$(find /usr/lib/fpc/${FPC_VERSION}/units/msdos -iname views.ppu -print -quit)"
+
+WORKDIR /work
+ENTRYPOINT ["ppcross8086", "-Tmsdos", "-WmSmall"]

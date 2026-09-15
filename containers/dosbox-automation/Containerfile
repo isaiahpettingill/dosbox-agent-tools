@@ -1,0 +1,46 @@
+FROM debian:trixie-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        cmake \
+        git \
+        pkg-config \
+        libx11-dev \
+        libxext-dev \
+        libxcursor-dev \
+        libxi-dev \
+        libxfixes-dev \
+        libxrandr-dev \
+        libxss-dev \
+        libxtst-dev \
+        libpng-dev \
+        libgl1-mesa-dev \
+        libasound2-dev \
+        libspeexdsp-dev \
+        libglib2.0-dev \
+        libsndfile1-dev \
+        libopusfile-dev \
+        libasio-dev \
+        python3 \
+        curl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+RUN git clone --depth 1 --recurse-submodules https://github.com/dosbox-automation/dosbox-automation.git .
+# JPEG encoding is required by the REST screenshot endpoint.
+RUN apt-get update && apt-get install -y --no-install-recommends libjpeg-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPT_FETCH_DEPS=ON -DUSE_SYSTEM_LIBS=ON -DOPT_TESTS=OFF
+RUN cmake --build build --parallel 4
+# Upstream excludes this fetched executable from the default build, but its
+# install rules still require it.
+RUN cmake --build build --target fluidsynth --parallel 4 && \
+    cmake --install build
+RUN ldconfig
+
+COPY dosbox.conf /etc/dosbox.conf
+
+WORKDIR /work
+ENTRYPOINT ["dosbox", "-conf", "/etc/dosbox.conf"]

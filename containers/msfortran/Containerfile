@@ -1,0 +1,10 @@
+FROM localhost/ntvdm:latest
+
+COPY ["third_party/dos_compilers/Microsoft Fortran v5/BIN", "/opt/fortran/BIN"]
+COPY ["third_party/dos_compilers/Microsoft Fortran v5/LIB", "/opt/fortran/LIB"]
+COPY ["third_party/dos_compilers/Microsoft Fortran v5/INCLUDE", "/opt/fortran/INCLUDE"]
+COPY containers/msfortran/compile-fortran /usr/local/bin/compile-fortran
+RUN chmod +x /usr/local/bin/compile-fortran
+
+WORKDIR /work
+ENTRYPOINT ["compile-fortran"]

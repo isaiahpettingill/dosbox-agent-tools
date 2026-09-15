@@ -1,0 +1,203 @@
+      _________________________________________________________________
+             _ __     __     __      __      _
+            ' )  )   /  `   /  )    /  `    /      tm
+             /--'   /--    /--<    /--     /
+           /    \  (____, (____)  (____,  (____,        Version 3.x
+      _________________________________________________________________
+                   (c) Copyright 1993  Brad L. Smith
+
+
+                             REBEL SOFTWARE
+                            P.O. Box 270277
+                         Fort Collins, CO  80527
+                             (303) 223-1882
+
+
+    REBEL 3.x has been developed to satisfy the demand for a spreadsheet
+    that offers unlimited customization potential.  The entire spreadsheet 
+    is patterned after a high level programming language.  By adding new 
+    functions and utilities, it can be tailored to fit the needs of 
+    virtually any user group. 
+    
+    REBEL requires no special license or registration fee to use, copy, or
+    distribute. It may even be packaged with other products or services.
+    For complete details, refer to the License Agreement in the back of the
+    User's Manual. 
+
+
+
+    ___________________________________________________
+    REQUIREMENTS
+
+         REBEL requires an IBM PC or compatible with at least 384K
+         of memory, running DOS 2.1 or higher.
+
+
+    ___________________________________________________
+    DOCUMENTATION
+
+         The User's Manual is contained in two files. To print
+         it, use the dos PRINT or COPY command.  If possible,
+         set your printer to 60 lines per page.
+
+                  A:\>  print  CHAP1-4.DOC
+                  A:\>  print  CHAP5-11.DOC
+               or
+                  A:\>  copy   CHAP1-4.DOC   PRN:
+                  A:\>  copy   CHAP5-11.DOC  PRN:
+
+
+    ___________________________________________________
+    HOW TO RUN REBEL
+
+         To start REBEL in Color Mode, type:
+
+                  A:\>  REBEL
+
+
+         To start REBEL in Black and White Mode, type:
+
+                  A:\>  REBEL  -B
+
+
+    ________________________________________________________
+    SAMPLE WORKSHEETS
+
+         Three sample worksheets have been included:
+
+            CHECKS.RB2      (a checkbook management worksheet)
+            COGO.RB2        (an example survey that uses many of
+                             the Coordinate Geometry functions)
+            MATRIX.RB2      (a general worksheet that contains an
+                             example of each of the Matrix Algebra
+                             functions)
+
+         To load a worksheet, press the F3 function key twice from
+         the Root Function Key Menu, and enter the worksheet's name
+         (with or without the extension).
+
+
+
+    ________________________________________________________
+    STANDARD SCRIPT LIBRARY
+
+         Scripts are one of the most powerful features offered by 
+         REBEL.  They extend the power and capabilities of the 
+         spreadsheet by allowing you to access functions, 
+         utilities, and even full applications that can be tailored 
+         to your specific needs.  They are also easy to use. 
+         Simply, reference the library that contains the script(s)
+         you want and REBEL's powerful Script Manager will handle 
+         the rest for you.  For example, to access the scripts in 
+         REBEL's standard library, STDLIB.REB, simply start the 
+         program using the -L: option (followed immediately by the 
+         name of the library): 
+       
+                           REBEL -L:STDLIB
+
+         It's that simple!  The documentation for this library is 
+         contained in STDLIB.DOC. 
+
+
+
+    ___________________________________________________
+    CHANGES (for existing users)
+
+         The built-in FINANCIAL functions have been eliminated from
+         this version of REBEL.  They're now scripts.  If you've
+         used any of these functions in any of your worksheets, you
+         will have to change their names to ALL UPPER CASE LETTERS.
+         You will also have to 'attach' REBEL's standard script
+         library file, STDLIB.REB, each time you start the program.
+         To do this, use the -L: option (followed immediately by the
+         name of the library):
+       
+                             REBEL -L:STDLIB
+
+
+
+    ________________________________________________________
+    WRITING YOUR OWN SCRIPTS
+
+      All versions of REBEL 3.0 and higher come with a built-in Script 
+      Manager that can access and execute scripts found in any (.REB)
+      library file.  Writing and creating these libraries, however, is
+      an optional feature that requires a license for REBEL's Script
+      Library Builder.  The cost of this additional software is $29.00
+      (see Order Form below). 
+
+
+    ________________________________________________________
+    KEEPING CURRENT
+
+      There are two ways to make sure you have the latest version of
+      REBEL:
+
+      1)  If you have a licensed copy of the Script Library Builder
+          (see Order Form below), you will automatically be notified
+          when any new release becomes avaliable.
+
+      2)  The latest release of REBEL is always posted on CompuServe
+          in Library 6 (Business Apps) of the IBM Applications
+          Forum (go IBMAPP) in a file called REBEL.ZIP.
+
+
+ 
+
+
+                                 ORDER FORM
+
+                        (AVALIABLE ONLY ON 3.5" DISKS)
+
+
+      Name (required): __________________________________________________
+
+      Title (optional): _________________________________________________
+
+      Company (optional): _______________________________________________
+
+      Address:  _________________________________________________________
+
+      City:  _____________________________  State: ____  Zip:  __________
+
+      Phone: ___________________ (Day) 
+
+
+      Your current version of REBEL: ____________________________________
+
+      Your current version of the Script Library Builder: _______________
+
+      Where did you here about this product? _____________________________
+
+
+
+
+      REBEL   (without a printed manual)      ($4.00)         ____________
+
+          (Add $10 for a printed User's Manual)
+
+
+      SCRIPT LIBRARY BUILDER:                 ($29.00)        ____________
+
+          (Add $10 for a printed manual for REBEL)
+
+          Note:  Be sure to include the name of the
+          individual to be licensed.  Do not use a
+          company name.
+
+
+      SCRIPT LIBRARY BUILDER  (upgrade)        ($19.00)       ____________
+
+          License No. ______________________
+
+
+      SHIPPING AND HANDLING    (U.S.A. - $6.00)               ____________
+
+          (Canada - $12.00,  Overseas - $20.00)
+
+
+                                    TOTAL (in US currency):   ____________
+
+
+
+       REBEL SOFTWARE  -  P.O. Box 270277  -  Fort Collins, CO  -  80527

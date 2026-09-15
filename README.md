@@ -4,6 +4,54 @@ Reusable, cross-platform PowerShell tools for driving [dosbox-automation](https:
 
 **Requires PowerShell 7+ (pwsh).** Runs on **Windows and Linux** (macOS is not supported by the setup script).
 
+## Build DOS applications and floppies
+
+The repository also includes a containerized 8086 DOS development workspace.
+Use GNU Make and Docker or Podman from Linux (or WSL on Windows); PowerShell
+is needed only for the REST automation module above.
+
+```sh
+git submodule update --init --recursive
+make images CONTAINER_ENGINE=docker
+make floppy NAME=magic8 CONTAINER_ENGINE=docker
+make -C floppies/magic8 test CONTAINER_ENGINE=docker
+```
+
+The Makefiles automatically prefer Podman when available. Omit the override
+to use that default. Compiler, emulator, asset conversion, and FAT12 image
+commands run inside containers. Images are written under each floppy's
+`build/` directory. Historical compiler dependencies are pinned submodules;
+their upstream licenses and distribution terms still apply.
+
+- **Compilers:** Open Watcom C, Free Pascal i8086 (including Free Vision),
+  NASM, Trubo Oberon, Turbo Pascal 7, Microsoft FORTRAN 5, and the DWED
+  historical compiler build environment.
+- **Emulators:** NTVDM for quick command-line execution and DOSBox Automation
+  for interactive testing.
+- **Novelty disks:** Magic 8 Ball, the personality questionnaire, Type Fury,
+  Matrix screensaver, and a deterministic nonsense-data disk.
+- **Utilities:** hello-world, Hacker Tools, GW-BASIC, DWED, FreeDOS Edit,
+  NAIED, PCWord, Rebel, TDE, and a [one-way ANOVA calculator](floppies/anova/README.md).
+- **Agent workflow:** [AGENTS.md](AGENTS.md), [DOS references](docs/README.md),
+  compiler notes, and the searchable [sample structure](samples/README.md).
+
+See [the development workflow](docs/development.md) for prompting and testing.
+
+For a verified example using the actual Turbo Pascal compiler from the
+`dos_compilers` submodule:
+
+```sh
+make turbopascal
+make -C samples/misc/turbopascal-hello test
+```
+
+Build and test the ANOVA calculator with the actual Microsoft FORTRAN 5 compiler:
+
+```sh
+make msfortran
+make -C floppies/anova test image
+```
+
 ## What's here
 
 ```

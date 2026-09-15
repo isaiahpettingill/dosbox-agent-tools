@@ -1,0 +1,176 @@
+;record sort version 1.1 copyright 1991-1996 andrew sprott. All rights reserved.
+
+		;help screens
+
+help1		db 10,13,'RSort version 1.1 Placed in the Public Domain from 29th April 1999.',13,10
+		db 'USAGE:  RSORT <input_filename> <output_filename> /[CWPFRn SDT IE Ofr LZ]',13,10,10
+		db 'Input_filename is the name of the file to sort.',13,10
+		db 'Output_filename is the name to give the sorted file.',13,10,10
+		db 'If you don',027h,'t include any further options then the default settings will be to',13,10
+		db 'sort paragraphs in ascending ASCII order. Line feeds and the end of file marker',13,10
+		db 'will be checked for.',13,10,10
+		db 'Press: 2 For information on sorting types ie. words, paragraphs etc.',13,10
+		db '       3 For Record sorting information.',13,10
+		db '       4 For options.',13,10,10
+		db 'This program is Public Domain software and source code is available with the',13,10
+		db 'other programs from www.talisoft.freeserve.co.uk Or send a SAE and 3.5 disk to:',13,10
+		db '  Talisoft',13,10
+		db '  61 Bryn Y Mor',13,10
+		db '  Three Crosses',13,10
+		db '  Swansea',13,10
+		db '  West Glamorgan',13,10
+         db '  Wales SA4 3PE',13,10,10
+		db 'You can contact me at andy@talisoft.freeserve.co.uk',13,10
+		db 'Press any other key to return to DOS.$'
+
+help2		db 10,13,'By using any one of the following switches you can sort by:',13,10
+		db '  /R : Records and Fields; Press 3.',13,10
+		db '  /C : Characters.',13,10
+		db '  /P : Paragraphs. Each paragraph is separated by a carriage return (ASCII code',13,10
+		db '       13) and - if the /L option isn',027h,'t set - a line feed (ASCII code 10).',13,10,10
+		db '  /W [separators] : Words. The separators option allows you to specify what',13,10
+		db '       characters separate words. By default these characters are spaces (ASCII',13,10
+		db '       code 32), tabs (ASCII code 9), carriage returns (ASCII code 13) and - if',13,10
+		db '       the /L option isn',027h,'t set - line feeds (ASCII code 10). If any additional',13,10
+		db '       separators are specified with this option then the default separators',13,10
+		db '       [above] are cancelled, so they will need to be included as well.',13,10,10
+		db 'The list of word separator characters or record and field separator characters',13,10
+		db 'can be included as ASCII characters inbetween quotes, for example ',027h,',+-;:',027h,13,10
+		db 'Binary characters such as tabs or line feeds are added with 64 and are not',13,10
+		db 'placed inside quotes. For example, a tab stop should appear as  I  and a',13,10
+		db 'carriage return as  M. To include a single quote as a separator, add 64 to',13,10
+		db 'it',027h,'s ASCII code, ie., ASCII ',027h,' = 39 + 64 = 103 = ASCII g.',13,10
+		db 'For example, to include commas, full stops and quotes with tabs and carriage',13,10
+		db 'returns as word separators, they should appear as  IMg',027h,',.',027h,,13,10,10
+		db 'Press: 1 For banner screen.',13,10
+		db '       3 For record sorting options.',13,10
+		db '       4 For options.$'
+
+help3		db 10,13,'/R [field] : Records are separated by carriage returns, and - if the /L option',13,10
+		db '   isn',027h,'t set - line feeds, or by whatever character you wish (See below).',13,10,10
+		db '   Records are split into fields, each field is separated by a comma, or by',13,10
+		db '   whatever character you wish.',13,10,10
+		db 'So; Records can be sorted by a specified field. For example, a file could',13,10
+		db 'consist of a list of records, each describing a book. The first field could be',13,10
+		db 'the name of the book, the second field the books author and the third field the',13,10
+		db 'name of the books publisher and so on.',13,10,10
+		db 'To sort your list of books in the order of the books author, use the /R switch',13,10
+		db 'followed by the number of the field you want to sort by. So if the books author',13,10
+		db 'is the second field then use /R 2',13,10,10
+		db '/F    : There is not really a general use for sorting fields, but It is',13,10
+		db '        included all the same.',13,10,10
+		db '/O rf : This option allows the record and field separators to be specified.',13,10
+		db '        See sorting types screen for information on how the separators are',13,10
+         db '        specified.',13,10,10
+		db 'Press: 1 For banner screen.',13,10
+		db '       2 Sorting types.',13,10
+		db '       4 For options.$'
+
+help4		db 10,13,'The following options are available:',13,10
+		db '/S : Sort by size, this is the best way to sort numbers.',13,10
+		db '/D : Sort in descending order.',13,10
+		db '/I : Ignore case of letters, ie. "A" is the same as "a".',13,10
+		db '/E : Remove duplicate items. This option is sensitive to the /T option [below].',13,10
+		db '/L : Don',027h,'t check for line feeds with carriage returns. Some text files may',13,10
+		db '     only have carriage returns separating each paragraph - files used to copy',13,10
+		db '     directly to a printer for example.',13,10
+		db '/Z : Don',027h,'t check for end of file marker. Use this option if the file is binary',13,10
+		db '     (database or spreadsheet etc.)',13,10,10
+		db '/T <table_filename> : This option allows you to specify the order of the ASCII',13,10
+		db '     character set. For example you can force the character  :  to be sorted',13,10
+		db '     after any digit or letter by placing the character  :  after the character',13,10
+		db '     z  in the file. The file contains all 256 ASCII characters in the desired',13,10
+		db '     order.',13,10,10
+		db '     There is a side effect to this feature; if you remove a character from the',13,10
+		db '     file, then that character will be simply ignored in the sort. This allows',13,10
+		db '     items containing characters such as  -  or  ',027h,'  to be sorted as if the',13,10
+		db '     characters were deleted.',13,10,10
+		db 'Press: 1 For banner screen.',13,10
+		db '       2 Sorting types.',13,10
+		db '       3 Record sorting.$'
+
+overwrite_string db ' exists, do you want to overwrite it? y/n$'
+
+		even	;word align
+
+end_of_file db 0ffh	;check for end of file marker
+function_argument db 03fh	;store for function argument
+
+sorting_flags dw para_bit	;default sorting flags
+
+field_marker dw 0d2ch
+
+input_handle dw 0	;input file handle
+output_handle dw 0	;output file handle
+char_file dw 0	;handle for character set file
+
+start_file dw program_end_off,0	;pointer to start of file
+char_table dw translation_table_offset,0
+separators_ptr dw separators_offset,0	;pointer to start of word separators
+leading_seps dw leading_seps,0	;address to separators before word
+file_count dw 2 dup 0	;size of file to sort
+
+skip_file dw 0,0	;used to count void records
+skip_count dw 0,0	;records to skip when rearranging
+
+		;sorting variables
+
+field_sep_count dw ?	;1 for separator +1 if line feed
+sort_field dw ?	;field offset in record to sort by
+
+start_of_item dw 2 dup ?	;address to start of first item
+start_of_sep dw 2 dup ?	;pointer to start of word separators
+start_of_sep_addr dw 2 dup ?	;address to start of word separators
+size_record1 dw 2 dup ?	;size of record one (sort)
+size_record2 dw 2 dup ?	;size of record two (sort)
+record_count dw 2 dup ?	;number of items to sort
+record_pointer_si dw 2 dup ?	;pointer to string 1 record
+record_pointer_di dw 2 dup ?	;pointer to string 2 record
+outer_sort_count dw 2 dup ?	;outer, middle and inner sorting loop
+middle_sort_count dw 2 dup ?	;counts
+inner_sort_count dw 2 dup ?
+pointer_array_write dw 2 dup ?	;pointers to sort pointer array
+pointer_array_read dw 2 dup ?
+moved_text_high dw 2 dup ?	;item and its destination
+
+start_file_addr dw 2 dup ?	;address to start of file
+destination_addr dw 2 dup ?	;destination for each item (slow method)
+end_of_item dw 2 dup ?	;end of item to be moved
+size_of_item dw 2 dup ?	;size of item in bytes
+size_of_portion dw 2 dup ?	;size of portion of item being moved
+file_size dw 2 dup ?	;size of file
+
+pointer_size dw ?	;size of item pointer record
+biggest_size dw 6 dup ?	;size of biggest string being compared
+
+input_file_offset dw ?	;offset to input file filename
+output_file_offset dw ?	;offset to output file filename
+
+handle dw ?	;store for input/output handle
+end_file dw 2 dup ?	;address to end of file
+end_file_ptr dw 2 dup ?	;pointer to end of file
+new_file dw 2 dup ?	;address to sorted file
+
+free_memory dw 2 dup ?	;memory available
+shift_count dw 2 dup ?	;size of text block being moved
+margin dw 2 dup ?	;difference between moved block and
+			;destination address
+command_line_end dw ?	;offset to end of command tail
+error_offset dw ?	;offset to error in command line
+columns dw ?	;number of columns for screen
+translation_table_offset:
+translation_table db 256 dup ?	;buffer for alternatively orded
+			;character set
+separator_count dw ?	;store for separator character count
+
+swap_flag db ?	;flags any pointer swapping
+
+separators_offset:
+separators db 128 dup ?	;word separator characters buffer
+end_separators equ $
+
+program_end_seg equ $/16+1
+program_end_off:
+
+		;end
+

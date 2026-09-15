@@ -1,0 +1,21 @@
+FROM debian:bookworm-slim AS ntvdm
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends g++ git libgomp1 ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+RUN git clone --depth 1 https://github.com/davidly/ntvdm.git . && \
+    g++ -Ofast -fno-builtin -DNDEBUG -I . ntvdm.cxx i8086.cxx -o /usr/local/bin/ntvdm -fopenmp
+
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git libgomp1 libstdc++6 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=ntvdm /usr/local/bin/ntvdm /usr/local/bin/ntvdm
+RUN git clone --depth 1 https://github.com/DosWorld/toc.git /toc
+
+WORKDIR /work
+ENTRYPOINT ["ntvdm"]

@@ -1,0 +1,22 @@
+GW-BASIC QUICK HELP
+
+Start with GWBASIC. At the Ok prompt, type:
+
+10 PRINT "HELLO"
+20 GOTO 10
+RUN
+
+Useful commands:
+  LIST       display the current program
+  NEW        clear the current program
+  LOAD "X"   load X.BAS
+  SAVE "X"   save the current program as X.BAS
+  RUN        run the current program
+  SYSTEM     return to DOS
+
+Use Ctrl-Break to stop a running program. If that key is unavailable, this
+release also accepts Ctrl-Shift-B. GWBASICA adds TIMER, RANDOMIZE TIMER,
+MKDIR, CHDIR, and RMDIR, but remains experimental.
+
+Serial I/O is not implemented in this release. Light pen, joystick, and
+printer support require further testing.

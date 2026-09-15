@@ -1,0 +1,1582 @@
+
+
+
+
+
+
+
+
+
+
+
+
+                       _ __     __     __      __      _
+                      ' )  )   /  `   /  )    /  `    /      tm
+                       /--'   /--    /--<    /--     /
+                     /    \  (____, (____)  (____,  (____,
+
+
+                                  Version 3.02
+
+
+
+
+                           U S E R ' S    M A N U A L
+
+
+
+
+
+
+
+
+                     (c) Copyright 1992, 1993  Brad L. Smith
+                               All Rights Reserved
+
+
+                                     5/6/93
+
+
+
+
+
+
+
+
+     
+                                   Contents
+      
+     
+     
+     CHAPTER 1  -  Introduction
+     
+     
+     CHAPTER 2  -  Getting Started
+     
+     Starting from a floppy disk  . . . . . . . . . . . . . . . . . . . 2:1
+     Installing REBEL on a Hard Disk  . . . . . . . . . . . . . . . . . 2:2
+     The Root Menu  . . . . . . . . . . . . . . . . . . . . . . . . . . 2:3
+     Return to the Root Menu  . . . . . . . . . . . . . . . . . . . . . 2:4
+     Exiting  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2:5
+     Entering formulas and labels . . . . . . . . . . . . . . . . . . . 2:6
+     Moving the Cell Pointer  . . . . . . . . . . . . . . . . . . . . . 2:7
+     Referencing values in other cells  . . . . . . . . . . . . . . . . 2:8
+     Escaping from a Prompt . . . . . . . . . . . . . . . . . . . . . . 2:9
+     Attaching a Script Library . . . . . . . . . . . . . . . . . . . .2:10
+     Using the (/) GOTO Command . . . . . . . . . . . . . . . . . . . .2:11
+     Cell Types . . . . . . . . . . . . . . . . . . . . . . . . . . . .2:12
+     Formula cells  . . . . . . . . . . . . . . . . . . . . . . . . .2:12:1
+     Label cells  . . . . . . . . . . . . . . . . . . . . . . . . . .2:12:2
+     Variable label cells . . . . . . . . . . . . . . . . . . . . . .2:12:3
+     
+     
+     CHAPTER 3  -  Tutorial
+     
+     
+     CHAPTER 4  -  The Function Key Menus
+     
+     CELL  (change cell display attributes) . . . . . . . . . . . . . . 4:1
+     EDIT  (edit/delete/copy/shift cells) . . . . . . . . . . . . . . . 4:2
+     FILE  (load/save worksheets) . . . . . . . . . . . . . . . . . . . 4:3
+     SCRIPTS   (load libraries, set swap area)  . . . . . . . . . . . . 4:5
+     WINDOWS   (set column width; create windows) . . . . . . . . . . . 4:6
+     UTILITY   (graphics, memory, sum, recalc cells)  . . . . . . . . . 4:7
+     DEFAULT   (set global default values)  . . . . . . . . . . . . . . 4:8
+     FORMATS   (set numeric/date/time displays) . . . . . . . . . . . . 4:9
+     
+     
+     CHAPTER 5  -  Edit Mode
+     
+     
+     CHAPTER 6  -  Technical Information
+     
+     Cell Types . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6:1
+     Cell Addresses . . . . . . . . . . . . . . . . . . . . . . . . . . 6:2
+     Operators  . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6:3
+     Formulas . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6:4
+     Arrays . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6:5
+     Multiple Worksheets  . . . . . . . . . . . . . . . . . . . . . . . 6:6
+     Range Operations . . . . . . . . . . . . . . . . . . . . . . . . . 6:7
+     Direct Cell Addresses  . . . . . . . . . . . . . . . . . . . . . . 6:8
+     Indirect Cell Addresses  . . . . . . . . . . . . . . . . . . . . . 6:9
+     When are Formulas Recalculated?  . . . . . . . . . . . . . . . . .6:10
+     Forcing Formulas to Recalculate  . . . . . . . . . . . . . . . . .6:11
+     Optimizing your worksheet  . . . . . . . . . . . . . . . . . . . .6:12
+     Miscellaneous Topics . . . . . . . . . . . . . . . . . . . . . . .6:13
+       Entering numbers from the Input Line . . . . . . . . . . . . .6:13:1
+       Switches . . . . . . . . . . . . . . . . . . . . . . . . . . .6:13:2
+       Reserved and Wildcard characters . . . . . . . . . . . . . . .6:13:3
+     
+     
+     CHAPTER 7  -  Shortcut Commands
+     
+     <Tab>  Change Windows Command. . . . . . . . . . . . . . . . . . . 7:1
+     (\)    Search Command. . . . . . . . . . . . . . . . . . . . . . . 7:2
+     (/)    Goto Cell Command . . . . . . . . . . . . . . . . . . . . . 7:3
+     (=)    Element Display Command . . . . . . . . . . . . . . . . . . 7:4
+     (=e<)  Set Element Command . . . . . . . . . . . . . . . . . . . . 7:5
+     (.)    Cell Recalc Command . . . . . . . . . . . . . . . . . . . . 7:6
+     
+     
+     CHAPTER 8  -  Functions
+     
+     Math Functions . . . . . . . . . . . . . . . . . . . . . . . . . . 8:1
+       abs  . . . . (absolute value). . . . . . . . . . . . . . . . . 8:1:1
+       ceil . . . . (ceiling) . . . . . . . . . . . . . . . . . . . . 8:1:2
+       exp  . . . . (exponential) . . . . . . . . . . . . . . . . . . 8:1:3
+       floor  . . . (floor) . . . . . . . . . . . . . . . . . . . . . 8:1:4
+       frac . . . . (fractional value) .  . . . . . . . . . . . . . . 8:1:5
+       int  . . . . (integer value) . . . . . . . . . . . . . . . . . 8:1:6
+       log10  . . . (base 10 log) . . . . . . . . . . . . . . . . . . 8:1:7
+       ln . . . . . (natural log) . . . . . . . . . . . . . . . . . . 8:1:8
+       mode . . . . (change mode of angle). . . . . . . . . . . . . . 8:1:9
+       rnd  . . . . (rounds value). . . . . . . . . . . . . . . . . .8:1:10
+       sqrt . . . . (square root) . . . . . . . . . . . . . . . . . .8:1:11
+     Trig Functions . . . . . . . . . . . . . . . . . . . . . . . . . . 8:2
+       cos  . . . . (cosine). . . . . . . . . . . . . . . . . . . . . 8:2:1
+       cotan  . . . (cotangent) . . . . . . . . . . . . . . . . . . . 8:2:2
+       sin  . . . . (sine). . . . . . . . . . . . . . . . . . . . . . 8:2:3
+       tan  . . . . (tangent) . . . . . . . . . . . . . . . . . . . . 8:2:4
+       acos . . . . (arccosine) . . . . . . . . . . . . . . . . . . . 8:2:5
+       asin . . . . (arcsine) . . . . . . . . . . . . . . . . . . . . 8:2:6
+       atan . . . . (arctangent). . . . . . . . . . . . . . . . . . . 8:2:7
+       atan2  . . . (arctangent). . . . . . . . . . . . . . . . . . . 8:2:8
+     String Functions . . . . . . . . . . . . . . . . . . . . . . . . . 8:3
+       atof . . . . (string to number). . . . . . . . . . . . . . . . 8:3:1
+       index  . . . (locate character). . . . . . . . . . . . . . . . 8:3:2
+       strcat . . . (string concatenate). . . . . . . . . . . . . . . 8:3:3
+       strncat  . . (concatenate n chars) . . . . . . . . . . . . . . 8:3:4
+       strcmp . . . (string compare). . . . . . . . . . . . . . . . . 8:3:5
+       strcpy . . . (string copy) . . . . . . . . . . . . . . . . . . 8:3:7
+       strlen . . . (string length) . . . . . . . . . . . . . . . . . 8:3:9
+       strncmp. . . (compare n chars) . . . . . . . . . . . . . . . . 8:3:6
+       strncpy. . . (copy n chars). . . . . . . . . . . . . . . . . . 8:3:8
+     Miscellaneous Functions. . . . . . . . . . . . . . . . . . . . . . 8:4
+       col  . . . . (column-offset) . . . . . . . . . . . . . . . . . 8:4:1
+       row  . . . . (row offset). . . . . . . . . . . . . . . . . . . 8:4:2
+       lvl  . . . . (worksheet level offset). . . . . . . . . . . . . 8:4:3
+     
+     
+     CHAPTER 9  -  Coordinate Geometry (COGO) Package
+     
+     About this package . . . . . . . . . . . . . . . . . . . . . . . . 9:1
+     Parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9:2
+       Referencing other coordinates. . . . . . . . . . . . . . . . . 9:2:1
+       Setting the angular mode (radians, degrees, grads) . . . . . . 9:2:2
+       Setting the angle type (ray, azimuth, bearing, etc..). . . . . 9:2:3
+       Entering angles (ray, azimuth, bearing, etc..) . . . . . . . . 9:2:4
+       Setting the display format . . . . . . . . . . . . . . . . . . 9:2:5
+     Functions that return a single coordinate  . . . . . . . . . . . . 9:3
+       @XY  . . . . . . .(load [x,y] rectangle coordinate)  . . . . . 9:3:1
+       @NE  . . . . . . .(load [north,east] Rectangle Coordinate) . . 9:3:2
+       @POLAR . . . . . .(load Polar Coordinate [radius,ray]) . . . . 9:3:3
+       @Traverse. . . . .(bearing/azimuth traverse) . . . . . . . . . 9:3:4
+       @FieldAngle. . . .(field angle traverse) . . . . . . . . . . . 9:3:5
+       @AngAngInt . . . .(angle/angle intersection) . . . . . . . . . 9:3:6
+       @AngDstInt . . . .(angle/distance intersection). . . . . . . . 9:3:7
+       @DstDstInt . . . .(distance/distance intersection) . . . . . . 9:3:8
+       @CurveRadius . . .(horizontal curve with radius) . . . . . . . 9:3:9
+       @CurveDelta  . . .(horizontal curve with delta angle). . . . .9:3:10
+     Functions that return more than one coordinate . . . . . . . . . . 9:4
+       @Segment . . . . .(line segment) . . . . . . . . . . . . . . . 9:4:1
+       @Polygon . . . . .(closed polygon/traverse)  . . . . . . . . . 9:4:2
+     Functions that return an angle and distance  . . . . . . . . . . . 9:5
+       @Inverse . . . . .(inverse traverse) . . . . . . . . . . . . . 9:5:1
+       @Radial  . . . . .(radial stakeout). . . . . . . . . . . . . . 9:5:2
+       @Closure . . . . .(error of closure/area of POLYGON) . . . . . 9:5:3
+     Functions that return multiple values . . . .  . . . . . . . . . . 9:6
+       @Triangle. . . . .(triangle solution). . . . . . . . . . . . . 9:6:1
+     Null Points, Segments, and Polygons. . . . . . . . . . . . . . . . 9:7
+     Graphics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9:8
+     Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9:9
+     
+     
+     CHAPTER 10  -  Matrix Algebra Package
+     
+     About this package . . . . . . . . . . . . . . . . . . . . . . . .10:1
+     Loading  and editing a matrix. . . . . . . . . . . . . . . . . . .10:2
+     Displaying matrix elements . . . . . . . . . . . . . . . . . . . .10:3
+     Referencing other matrices . . . . . . . . . . . . . . . . . . . .10:4
+     Matrix functions that return another matrix  . . . . . . . . . . .10:5
+       @Matrix  . . . . . . . (creates and loads a matrix). . . . . .10:5:1
+       @MatrixAdd . . . . . . (adds matrix A & B) . . . . . . . . . .10:5:2
+       @MatrixCrossProduct. . (cross product of matrix A & B) . . . .10:5:3
+       @MatrixExponent  . . . (multiplies a matrix by itself) . . . .10:5:4
+       @MatrixInverse . . . . (inverts a matrix). . . . . . . . . . .10:5:5
+       @MatrixProduct . . . . (multiples matrix A & B). . . . . . . .10:5:6
+       @MatrixScalar  . . . . (scalar multiplication) . . . . . . . .10:5:7
+       @MatrixSolution  . . . (returns solution set). . . . . . . . .10:5:8
+       @MatrixSubtract  . . . (subtracts matrix B from A) . . . . . .10:5:9
+       @MatrixTranspose . . . (transposes matrix A) . . . . . . . . 10:5:10
+     Matrix functions that return a single value) . . . . . . . . . . .10:6
+       determinant  . . . . . (returns the determinant) . . . . . . .10:6:1
+       dotproduct . . . . . . (returns the dot product) . . . . . . .10:6:2
+     Using NULL matrices. . . . . . . . . . . . . . . . . . . . . . . .10:7
+     Using matrices with Points, Segmemts, and Polygons . . . . . . . .10:8
+     Examples . . . . . . . . . . . . . . . . . . . . . . . . . . . . .10:9
+     
+     
+     CHAPTER 11  -  Scripts
+     
+     What are scripts?. . . . . . . . . . . . . . . . . . . . . . . . .11:1
+     Using scripts. . . . . . . . . . . . . . . . . . . . . . . . . . .11:2
+     The Script Index . . . . . . . . . . . . . . . . . . . . . . . . .11:3
+     The Swap Area. . . . . . . . . . . . . . . . . . . . . . . . . . .11:4
+     Trouble Shooting . . . . . . . . . . . . . . . . . . . . . . . . .11:5
+     Writing your own scripts . . . . . . . . . . . . . . . . . . . . .11:6
+     
+     
+     APPENDIX A  -  Support
+     
+     
+     APPENDIX B  -  Warrenty and License Agreement
+                    Order Form for Script Library Builder
+     
+
+
+                                                _________________________    
+    ___________________________________________/  Chapter 1  INTRODUCTION
+
+
+    REBEL 3.0 is a spreadsheet that is designed for a diverse mix of 
+    scientific and non-scientific users.  It can be tailored to fit the 
+    needs of almost any industry or profession by adding custom 'script' 
+    libraries to its already powerful set of built-in functions.  Scripts, 
+    unlike the familiar 'macro', look and behave like built-in functions 
+    and can range from simple conversion routines to full blown 
+    applications.  They are easy to write (using a structured C-like 
+    programming language) and are accessed from separate library files, 
+    making them easy to share with others.  REBEL's features do not end 
+    with scripts, however.  Its built-in Coordinate Geometry and Matrix 
+    Algebra packages offer computing power that is unmatched by any other 
+    spreadsheet. The 27 functions that comprise these packages allow 
+    spatial data, as well as matrixes, to be manipulated with the same 
+    event driven (what-if) engine that is used for standard functions. 
+    Simply put, no other spreadsheet can match REBEL's flexibility and 
+    power. 
+
+    As you read through this manual, you'll find that REBEL has not 
+    hesitated to break with tradition in its effort to develop the most 
+    sophisticated spreadsheet you'll ever use.  Listed below are a few 
+    additional examples of what make this spreadsheet so unique. 
+
+
+         CELL ADDRESSES
+
+               While most spreadsheets on the market today use letters
+               to refer to the columns of other cells, REBEL uses
+               numbers (e.g. 'AB12' would be equivalent to [12,28] in
+               REBEL - row 12 column 28).
+
+
+         INDIRECT CELL ADDRESSING
+
+               The ROW and/or COLUMN fields of a Cell Address can
+               themselves be expressions, allowing Cell Addresses to
+               be nested.  This means that a cell reference can vary,
+               depending on the values of other cells (very handy for
+               table lookups).
+
+                        [ROW, [row,column] ]
+                               \__________\
+                                            \__ The value from this
+                                                cell will be used as
+                                                COLUMN number
+
+         ARRAYS
+
+               Upto 8000 values (array elements) can be assigned to each
+               cell!  Each of these values can be accessed by including
+               the optional 3rd Array Element field in the Cell Address:
+
+                              [row,column,ELEMENT]
+
+
+         MULTIPLE WORKSHEETS
+
+               Upto 4 separate worksheets can be loaded at one time.
+               Cells from any of these worksheets can be individually
+               addressed by including the optional 4th Worksheet Level
+               field in Cell Address:
+
+                           [row,column,element,WORKSHEET]
+
+               NOTE:  Both the 'Array Element' and 'Worksheet' fields of
+               a Cell Address are optional.  Their values default to
+               zero if not included.
+
+
+
+         OVER THIRTY (30+) OPERATORS:
+
+               Unary         !   +   -
+               Arithmetic   **   *    /    %   +    -
+               Relational    >   >=   <=   <   ==   !=
+               Logical      &&   ||
+               Bitwise      <<   >>   &   |
+               Ternary      ?:;
+               Assignment    =   +=  -=  *=  /=  %=  <<=  >>=  &=  |= 
+
+
+
+         PROGRAMMABLE RANGE OPERATIONS
+
+               A 'Range Operation' can be defined that temporarily
+               assigns one or more 'formulas' to a group of cells,
+               returning a single value upon completion.  The general
+               form of a Range Operation is similar to that of a
+               standard Cell Address and can be used within other
+               formulas in much the same manner.
+
+
+
+    REBEL does not stop here, however.  Every effort has been made to make
+    this the simplest spreadsheet you have ever used.  Function keys are
+    designed to act like built in macros that perform complex editing
+    tasks, which you would otherwise be forced to develop yourself.
+
+         SHIFT cells around your worksheet by pressing a single key.
+         UNDELETE cells mistakenly lost
+         SEARCH and REPLACE (with wildcards)
+         CUT and PASTE editing
+
+    and more . . .
+
+         SPLIT SCREENS
+         MINIMAL RECALC
+         ERROR MESSAGES
+         SINGLE STEP FORMULA DEBUGGER !
+
+
+                                             _____________________________
+    ________________________________________/  Chapter 2   GETTING STARTED
+
+    
+    When REBEL is first invoked, you will be presented with an empty 
+    worksheet at the 'Root Menu Level'.  Each cell can have either a 
+    'label' (text string) or a 'formula' associated with it.  Formulas 
+    consist of numbers or expressions that may or may not be based on the
+    results of other cells. 
+
+    The screen is divided into three regions:  1) the "Function Key Menu" 
+    at the top;  2) the "Input Line" for entering text or formulas; and
+    3) the "Cells" that comprise the worksheet.  The options, displayed
+    by the Function Key Menus, if written entirely in upper case letters,
+    will re-assign a new set of options to each function key; or, if they
+    are abbreviated in both upper and lower case letters, they will perform
+    a specific action.  The first menu you will encounter upon entering
+    the spreadsheet is referred to as the "Root Menu".
+
+
+                       _______   _______   _______             _______
+                      |  f1   | |  f2   | |  f3   |           |  f0   |
+                      | CELL  | | EDIT  | | FILE  |   . . .   | EXIT  | 
+     Worksheet        |__________________________________________________
+    Level number -->  <4>______1__________2_________3__________4_________ 
+                      |1|
+                      |2|                                   "The Root Menu 
+     _______   _______   _______             _______         Function Key
+    |  f1   | |  f2   | |  f3   |           |  f0   |   <--  Menu"
+    | CELL  | | EDIT  | | FILE  |   . . .   | EXIT  | 
+    |_________________________________________________  <-- "Input Line"
+    <1>______1__________2_________3__________4________  <--  (Column Bar)
+    |1|
+    |2|  <--  (Row Bar)            15.00
+    |3|                       __________
+    |4|                      |     25.00|  <--  "Cell Pointer"
+    |5|                                          (active cell)
+    |6|
+     :  
+    [2,3]+10   <--   (formula of active cell)
+   
+
+     
+    Two cursors are displayed on the screen.  The large highlighted area on 
+    the worksheet is referred to as the "Cell Pointer".  It points to the 
+    currently active cell that is about to accept a new or modified entry. 
+    This cursor (or pointer) can be moved at any time with arrow keys on
+    your keyboard.  The second, smaller cursor is located on the "Input
+    Line" (just below the Function Key Menu).  It is used to enter a text
+    or formulas into the cell highlighted by the Cell Pointer. 
+    
+    The remaining portion of this section will provide you with a quick 
+    overview of some of the basics you will need to get started.  You'll
+    learn how to start REBEL, how to move between worksheet levels, how to
+    use the Function Key Menus, and how to enter data.  For more details
+    on each of these topics, refer to the Technical Information section
+    in Chapter 6. 
+
+
+
+    2:1  STARTING FROM A FLOPPY DISK
+    
+    If you will be starting this program from a floppy disk (assumed to be 
+    in drive A), type the following sequence of commands from your 
+    computer's system prompt: 
+     
+                 A:                 (moves you to Drive A)
+                 CD \               (change to root directory)
+   
+                 REBEL              (for color mode)
+                                          or
+                 REBEL -b           (for black and white mode)
+
+
+
+    2:1   INSTALLING REBEL ON A HARD DISK
+ 
+    To permanently install REBEL on your hard drive (assumed to be Drive 
+    C), you need only copy the .EXE and .DOC files from the floppy disk.  
+    The following series of commands is but one example of how to do this: 
+
+             C:                 (moves you to Drive C)
+             CD  \DOS           (change to a subdirectory
+                               called: 'DOS' if it exists)
+
+             COPY  A:*.EXE  *.*
+             COPY  A:*.DOC  *.*
+
+    (If you create a separate subdirectory for the REBEL .EXE and .DOC 
+    files, be sure to include it in your search path; otherwise, you'll 
+    need to move to THAT directory to execute the program.) 
+
+
+
+    2:3   THE ROOT MENU
+
+    A variety of operations can be performed using the function keys on 
+    your keyboard.  The specific task assigned to each of these keys can 
+    vary, however, depending on the menu displayed at the top of your 
+    screen.  The first menu that appears when you startup the program is 
+    called the 'Root Menu'.
+     
+               _______   _______   _______             _______
+              |  f1   | |  f2   | |  f3   |           |  f0   |
+              | CELL  | | EDIT  | | FILE  |   . . .   | EXIT  | 
+
+
+    This menu is used (as a starting point) to re-assign a new set of 
+    options to the function keys.  Notice that the descriptive words are 
+    written in UPPER CASE letters. 
+
+
+
+    2:4   RETURN TO THE ROOT MENU
+
+    In most menus, the F1 function key (DONE) will return you to the Root 
+    Menu. 
+
+
+
+    2:5   EXITING
+
+    You can terminate your session by pressing the F10 function key (EXIT) 
+    from the "Root Menu". 
+
+
+
+    2:6   ENTERING 'FORMULAS' AND 'LABELS'
+
+    All cell entries are made from the Input Line (above the Column Bar).  
+    A special 'Edit Mode' is also available to modify existing entries  
+    (refer to Chapter 5). 
+
+
+
+    2:7   MOVING THE CELL POINTER
+
+    You can move the Cell Pointer from cell to cell with the Arrow Keys or 
+    jump from screen to screen with the following keys: 
+
+             <Pg Up>     moves Cell Pointer UP one screen.
+             <Pg Dn>     moves Cell Pointer DOWN one screen.
+             <Home>      moves Cell Pointer LEFT one screen.
+             <End>       moves Cell Pointer RIGHT one screen.
+
+    NOTE:  You can not move the Cell Pointer with the arrow keys once you 
+    have started an entry. 
+
+
+
+    2:8   REFERENCING 'VALUES' IN OTHER CELLS
+
+    The value of any cell within the spreadsheet can be used in another 
+    cell's formula by surrounding the ROW and COLUMN number (of the cell 
+    that contains the value) with square brackets [].  This is called a 
+    "Cell Address". 
+
+                          [row,column]
+
+           Example:  If you want to multiply the value in
+           cell [1,2] (row 1, column 2) by 5 and display
+           the answer at your current cell location, the
+           formula might look something like this:
+
+                           [1,2] * 5
+
+    IMPORTANT!  When entering values, never being a number with a zero 
+    (unless, of course, the number is zero).  That is, if you want to enter 
+    "45", don't type it as "045" (if you do, you'll get the decimal 
+    equivalent of OCTAL 45).  Refer to Section 6:13 - Misc Topics, for an 
+    expanded discussion. 
+
+
+
+    2:9   ESCAPING FROM A 'PROMPT'
+
+    If you do not wish to complete an option that is prompting you for 
+    information, press the <Esc> key to abort.  You will be returned to the 
+    Input Line. 
+
+
+
+    2:10   ATTACHING A 'SCRIPT' LIBRARY
+
+    REBEL now allows you to access functions (i.e. scripts) from special 
+    (.REB) library files.  The documentation for these libraries is usually 
+    contained in a (.DOC) file of the same name.  Before you can access 
+    these scripts, however, you must first 'attach' the library contains 
+    them.  For example, to access the scripts in REBEL's standard library, 
+    STDLIB.REB, simply start the program using the -L: option (followed 
+    immediately by the name of the library). 
+
+
+                              REBEL  -L:STDLIB
+
+
+    Refer to Chapter 11 for more details on the use of scripts. 
+
+
+
+    2:11   USING THE (/) GOTO COMMAND
+
+    You can move the Cell Pointer directly to any cell on worksheet, 
+    without using the arrow keys.  This can be very handy if you need to 
+    move the Cell Pointer a long distance or to another worksheet at a 
+    different level. To do this, simply type a slash (/) at the Input Line 
+    (located above the Column Bar).  You will then be asked to enter the 
+    Row, Column, and Worksheet Level of the cell you wish to move to.  You 
+    can press the <Enter> key at any of the prompts to accept the default 
+    value that is enclosed within the square brackets []. 
+
+
+
+    2:12   CELL TYPES
+
+    A cell takes on one of three possible cell types (FORMULA, LABEL, or 
+    VARIABLE LABELS) whenever you enter data.  The spreadsheet will 
+    automatically try to choose the correct cell type for you; and, in most 
+    cases, it will do it correctly.  There are, however, a few cases that 
+    can confuse the spreadsheet; so, it is worth a brief look to see 
+    exactly how an entry is interpreted. 
+
+
+
+    2:12:1   FORMULA CELLS
+
+    A FORMULA cell type is assigned to a cell whenever a number, 
+    expression, or function is entered.  For example: 
+                       
+                       1.00            (number)
+                       [1,2]+200       (expression)
+                       +sqrt(16)       (function)
+
+    Any entry that begins with one of the following characters: 
+
+                   + - ( [ . 0 1 2 3 4 5 6 7 8 9 @
+
+    will be automatically be interpreted as a mathematical 'formula' and 
+    the spreadsheet will attempt to compute its value.  It is important, 
+    however, to remember that some valid formulas may NOT begin with one of 
+    these characters.  In these cases, you must begin the entry with a Plus 
+    (+) sign to FORCE the spreadsheet to interpret it as FORMULA. 
+
+   
+   
+    2:12:2   LABELS CELLS
+
+    A LABEL cell type is assigned whenever a string of characters is 
+    entered that DOES NOT BEGIN with one of the characters that defines a 
+    FORMULA cell.  The entry will be displayed exactly as it is typed and 
+    the spreadsheet will attach no special meaning to it.  For example: 
+
+                          January the 1st
+
+    Note:  If a LABEL must begin with one of the characters that defines an 
+    FORMULA, a Single Quote (') can be used force the spreadsheet to 
+    interpret it as a LABEL. The optional single quote ('), at the 
+    beginning of the entry, will not appear when the LABEL is displayed. 
+    For example: 
+
+                          '1st of January
+
+
+
+    2:12:3   VARIABLE LABELS
+
+    The VARIABLE LABEL is a special type of LABEL cell that is treated a 
+    little different by the spreadsheet. These entries MUST begin with a 
+    Double Quote (").  They are normally displayed as they are entered, 
+    except when a Cell Address (e.g. "[1,2]") is encountered within the 
+    string.  In this case, the Cell Address is replaced by the 'contents' 
+    of the cell being referenced.  For example, if the cell at [1,1] (row 
+    1, column 1) contains the label:  'red and you then make the following 
+    entry at cell [3,1]: 
+
+                             "My car is [1,1].
+
+    it will actually display:
+
+                              My car is red.
+
+    Note:  The Double Quote (") IS REQUIRED to force [1,1] to be replaced 
+    by the contents of that cell.  If you tried this, type something else 
+    in cell [1,1] and see what happens! 
+
+
+
+                                                _________________________
+    ___________________________________________/  Chapter 3   TUTORIAL
+
+
+
+    In the following tutorial, you will design a simple worksheet that
+    can be used to compute your monthly car or mortgage loan payment.
+    It should end up looking something like this:
+
+
+                _________________________________________
+
+
+           Loan size:                          10000.00
+           Annual Interest Rate:                   0.12
+           Length of Loan (years):                 3.00
+
+                    Monthly Payment:             332.14
+
+                _________________________________________
+
+
+
+    IMPORTANT:  In the exercise, you will be using the 'PMT' script which
+    is contained in the STDLIB.REB library file.  It is, therefore,
+    necessary to 'attach' this library before beginning this tutorial. To
+    do this, simply exit the program and restart it with the following -L
+    option at the DOS prompt:
+
+                             REBEL -L:STDLIB
+
+
+
+    NOTE:  If you make a mistake or you wish to change a value while
+    performing this exercise, simply move the Cell Pointer back to the
+    cell and re-type the correct entry.
+
+
+
+         MAKE SURE YOU'RE ON THE RIGHT CELL BEFORE YOU START TYPING! 
+    ______________________________________________________________________
+                |
+    Step 1      |    Using the arrow keys, move the Cell Pointer to cell
+                |    [3,2]  (row 3, column 2)
+                |
+    Step 2      |    Type   "Loan size:"       (without the quotes)
+                |
+    Step 3      |    Move right to cell [3,5]
+                |
+    Step 4      |    Type:   "10000"           (without the quotes)
+                |
+    Step 5      |    Move down and to the left to cell [4,2]
+                |
+    Step 6      |    Type:   "Annual Interest Rate:"    (without the quotes)
+                |
+    Step 7      |    Move right to cell [4,5]
+                |
+    Step 8      |    Type:   ".12"              (without the quotes)
+                |
+    Step 9      |    Move down and to the left to cell [5,2]
+                |
+    Step 10     |    Type:   "Length of Loan (years):"  (without the quotes)
+                |
+    Step 11     |    Move right to cell [5,5]
+                |
+    Step 12     |    Type:   "3"                (without the quotes)
+                |
+    Step 13     |    Move down and to the left to cell [7,3]
+                |
+    Step 14     |    Type:   "Monthly Payment:"         (without the quotes)
+                |
+    Step 15     |    Move right to to cell [7,5]
+                |
+    Step 16     |    Type:   "+PMT([3,5],[4,5]/12,[5,5]*12)"     (no quotes)
+                |
+                |    (Notice the plus sign in front of the function call.)
+
+
+      If you got "332.14" for the payment, congratulations, you entered 
+      everything right!  Now, you can compute any payment you like, simply
+      by re-entering the appropriate values in cells [3,5] thru [5,5].
+      The next steps describe how to save this worksheet.
+
+                |
+    Step 17     |    From the Root Function Key Menu, press F3 (FILE)
+                |
+                |      You should now see a new set of options displayed
+                |      on the "Function Key Menu".  These options are 
+                |      used to SAVE and LOAD (retrieve) worksheets.
+                |
+    Step 18     |    Press function key F4 (Save) to save your worksheet.
+                |
+                |      You should now see a prompt that requests the name
+                |      of the file to store this worksheet in.
+                |
+    Step 19     |    Enter: "PAYMENTS"  (without the quotes)
+                |
+                |      If you did everything correctly, your worksheet
+                |      should now be saved in a disk file called:
+                |      PAYMENTS.RB2.  You can reload it at any time with
+                |      the F3 (Load) option.
+                |
+
+ 
+                                          ________________________________
+    _____________________________________/  Chapter 4   FUNCTION KEY MENUS    
+
+
+
+    The Function Key Menus that appear at the top of your screen are
+    composed of two types of options.  Those that:
+
+        1)  perform specific operations or commands
+
+        2)  and those that display a new Function Key Menu.
+
+    The word in the descriptive box that identifies each of these options
+    will help you determine how it is used.  For example, a function key
+    that loads a new set of menu options will always be written in UPPER
+    CASE LETTERS; while function keys that perform commands, will always
+    be written in BOTH UPPER AND LOWER CASE LETTERS.
+
+    Occasionally, when you press a function key, a prompt will appear
+    requesting additional information.  These prompts have a specific
+    format that's worth learning:
+
+
+                   Question... (options)?  [default]:  _
+                                  |         |
+        the range of legal _______|         |____ the default answer
+        answers are displayed                     that will be used
+        within parentheses                      if only the <Enter>
+                                                  key is pressed
+
+
+    Important!    If, for any reason, you should need to abort an option
+    without completing it, simply press the <Esc> key.  You will be returned
+    to the Input Line and no further action will be taken.
+
+    Note:  Some prompts will request that you move the Cell Pointer to
+    another location with the arrow keys (e.g. when you need to define the
+    lower right hand corner of a range of cells).  Normally, the arrow keys
+    work fine for this - except when you need to move long distances.  In
+    these situations, the Forward Slash (/) "Goto" Command can be used at
+    the prompt to initiate a jump to another worksheet location (refer
+    to Chapter 7).
+
+    The remainder of this section describes each of the Function Key Menus
+    in detail.  Most options are non-destructive, with the exception of
+    the Clear, Purge, and Delete options; so, don't be afraid to try them.
+    Remember, the <Esc> key will break you out of almost anything.
+
+
+                              Chapter Contents
+
+                     _______
+                    |  f1   | 
+      Section 4:1   | CELL  |
+
+            Displays a set of menu options that allow you to modify the 
+            ATTRIBUTES of an existing cell  (Precision, Arrays, Hide, 
+            Protect, Recalc, Color, etc.). 
+                     _______
+                    |  f2   | 
+      Section 4:2   | EDIT  |
+
+            Displays a set of menu options that allow you to EDIT the 
+            worksheet display and the contents of an existing cell (Edit,
+            Undo, Join, Justify, Purge, Move, Copy, Shift, Insert, Delete). 
+                     _______
+                    |  f3   | 
+      Section 4:3   | FILE  |
+
+            Displays a set of menu options that allow you to SAVE and LOAD
+            worksheets, WRITE reports, and READ text files.
+                     _______
+                    |  f5   | 
+      Section 4:5   |SCRIPTS|
+
+            Displays a set of menu options that allow you to load and clear
+            the Script Index, adjust the size of the Swap Area, and assign
+            scripts to Function Keys.
+                     _______
+                    |  f6   | 
+      Section 4:6   |WINDOWS|
+
+            Displays a set of menu options that allow you to create new 
+            windows  (Make/Remove Windows, Width, Level, Margins). 
+                     _______
+                    |  f7   | 
+      Section 4:7   |UTILITY|
+
+            Displays a set of menu options that perform general UTILITY 
+            functions  (Graphics, Memory, Affected Cells, Recalculation). 
+                     _______
+                    |  f8   | 
+      Section 4:8   |DEFAULT|
+
+            Displays a set of menu options that allow you to alter the 
+            GLOBAL DEFAULT settings  (Column_Width, Precision, Color,
+            and Range Recalc).  
+                     _______
+                    |  f9   | 
+      Section 4:9   |FORMATS|
+
+            Displays a new set of menu options that allow you to modify the
+            way in which numeric values are displayed  (Percent, Dec, Sci,
+            Oct, Hex, Bin, Comma, $, Bearing)
+
+
+    -----------------------------------------------------------------------
+    Section 4:1     CELL ATTRIBUTES
+    -----------------------------------------------------------------------
+
+     .........
+     :  f1   :   From the "Root Menu", press F1 to access the
+     : CELL  :     following set of Function Key options.
+
+      _______   _______   _______
+     |  f1   | |  f2   | |  f3   | 
+     | DONE  | |  x.xx | | Array |  . . .
+
+          f1   -   Returns you to the Root Function Key Menu.
+
+          f2   -   Changes a cell's fixed DECIMAL format, controlling the 
+                   number of decimal places that will appear when the 
+                   cell's value is displayed.  Changing this setting will 
+                   not affect the actual value stored by the spreadsheet. 
+                   Numbers can be displayed with up to 14 decimal places. 
+                   If the existing column width is not large enough to 
+                   handle the format, a series of asterisks (****) will 
+                   appear instead of the expected value.  Even if this 
+                   should occur, you can use the "=" Display Element 
+                   Command to view this or any other value stored by the 
+                   cell (refer to Chapter 7). 
+
+           f3   -  Creates an ARRAY SPACE of up to 8000 values that can be 
+                   assigned to any FORMULA cell - highlighted by the Cell 
+                   Pointer.  (Section 6:5 in the Technical Information 
+                   portion of this manual contains a complete discussion of 
+                   cell array areas.)  The values stored in this array area 
+                   can be addressed within any expression by including the 
+                   Array Element field in the Cell Address:
+                    
+                                   [row,col,ELEMENT]
+
+                   Array values can be viewed or loaded with the (=) 
+                   Display Element Commands described in Chapter 7.  Other, 
+                   more advanced loading, techniques are discussed in 
+                   Section 4:3 - Loading Text Files. 
+
+
+                    ___________________________
+                   |  f4        f5        f6   |
+                   | Display   Cell      OKAY? |
+                   | Hide      Row             |
+                   | Protect   Column          |
+                   | Unprot    All             |
+                   | Blink     Range           |
+                   | noBlink                   |
+                   | +ReCalc                   |
+                   | -ReCalc                   |
+                   | +NoCalc                   |
+           .  .  . | -NoCalc                   | .  .  .
+
+
+         Function keys F4 and F5 work together to form a user defined option
+         that is executed when the F6 (OKAY?) key is pressed.  The F4 and F5
+         keys do not perform any action other than to set up the option.
+
+          f4   -   Display:  Causes a hidden cell to be redisplayed.
+
+                   Hide:     Sets a flag, preventing a cell's contents
+                             form being displayed on the screen.
+
+                   Protect:  Sets a flag, preventing the contents of a cell 
+                             from being purged or edited.  If you do 
+                             inadvertently attempt to modify a protected 
+                             cell, you will automatically be placed in the 
+                             'Edit Mode' (see Chapter 5).  You can then use 
+                             the "CUT" option to temporarily save your 
+                             entry until you are able to remove the 
+                             protection flag.  Otherwise, simply press the 
+                             <ESC> key to abort. 
+
+                   UnProt:   Removes the protection flag, allowing a cell 
+                             to be purged or edited.
+
+                   Blink:    Causes a cell to blink on and off when
+                             displayed.
+
+                   noBlink:  Prevents a cell from blinking when displayed.
+
+                   +ReCalc:  Sets a flags that FORCES a cell to be
+                             RECALCULATED whenever ANY change is made to
+                             the spreadsheet - even if the change does not
+                             directly affect the cell.
+
+                   -ReCalc:  CLEARS the '+ReCalc' flag that forces a cell
+                             to be recalculated each time the spreadsheet
+                             is modified.
+
+                   +NoCalc:  Sets a flag that PREVENTS a cell from being
+                             recalculated - even if that cell is directly
+                             affected by a change somewhere else in the
+                             spreadsheet.
+
+                   -NoCalc:  CLEARS the '+NoCalc' flag.
+                                    
+          f5   -   Defines the range of cell(s) that will take on the
+                   attributes defined by the F4 key.  This key has no 
+                   affect until the F6 (OKAY) key is pressed.
+
+          f6   -   Executes the user defined option setup by the F4 and F5
+                   function keys.
+
+
+
+                                     _____________________________________
+                                    |  f7        f8        f9        f0   |
+                                    | Cell      White     Low       OKAY? |
+                                    | Row       Brw/Ylw   High            |
+                                    | Col       Magenta                   |
+                                    | ALL       Red                       |
+                                    | Range     Cyan                      |
+                                    |           Green                     |
+                              . . . |           Blue                      |
+
+
+         Function keys F7 thru F9 work together to form a 'user defined
+         option' that is executed when the F10 (OKAY?) key is pressed. 
+         The F7, F8, and F9 keys do not perform any action other than to
+         set up the option.
+
+         NOTE:  Cells that have their color display changed using this
+         option will no longer be affected by changes made to the default
+         color setting (see Section 4:8 - F7 thru F10).
+
+          f7   -   Defines the range of cells that will take on a new
+                   COLOR attribute.  
+
+          f8   -   Defines a new display COLOR.
+
+          f9   -   Sets the display INTENSITY to High or Low.
+
+          f0   -   Executes the user defined option setup by the F7, F8,
+                   and F9 function keys.
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:2   EDIT
+    -----------------------------------------------------------------------
+
+               .........
+               :  f2   :  From the "Root Menu", press F2
+               : EDIT  :
+      _______   _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   | |  f6   |
+     | DONE  | | Edit  | | Undo  | | Join  | |<Jstify| |Jstify>| . . .
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   Activates the 'Edit Mode' Function Keys (see Chapter 5).
+
+          f3   -   UNDOES the last change made to a cell.
+
+          f4   -   JOINS the 'labels' of two adjacent cells.  The Cell
+                   Pointer must be positioned over the left most label.
+
+          f5   -   LEFT JUSTIFIES the value displayed by a FORMULA cell.
+
+          f6   -   RIGHT JUSTIFIES the value displayed by a FORMULA cell.
+
+
+                                     _____________________________________
+                                    |  f7        f8        f9        f0   |
+                                    | Purge     Cell                OKAY? |
+                                    | Shift     Row       Left            |
+                                    | Move      Column    Right           |
+                                    | Copy      All       Up              |
+                                    | Insert    Range     Down            |
+                                    | Delete              (rel)           |
+                                    |                     (abs)           |
+                             . . .  |                     (val)           |
+
+
+         Function keys F7 thru F9 work together to form a 'user defined
+         option' that is executed when the F10 (OKAY?) key is pressed. 
+         The F7, F8, and F9 keys do not perform any action other than to
+         set up the option.
+
+          f7    Purge:  Removes one or more cells, freeing the memory for
+                        other uses.
+
+                Shift:  Moves one or more cells one cell position up, down,
+                        left, or right.  This command will only shift
+                        OCCUPIED cells that are ADJACENT to the Cell
+                        Pointer.  As a result, the position of the Cell
+                        Pointer is important, as it can influence which
+                        cells are actually shifted.  Take the following
+                        example.  If you want to shift a 'column' of cells
+                        UP, LEFT, or to the RIGHT, you must place the Cell
+                        Pointer on the last occupied cell in the column
+                        that you wish to be included.  This would be the
+                        cell with the 'highest' row number in its Cell
+                        Address. The cells that will be shifted will
+                        include everything above the Cell Pointer until
+                        the first empty cell is encountered.  When shifting
+                        a 'column' of cells DOWN, place the Cell Pointer at
+                        the top of the column (the cell with the 'lowest'
+                        row number in its address).  Everything below this
+                        point will be shifted until the first empty cell is
+                        encountered.
+
+                Move:   Moves one or more cells to a new location, anywhere
+                        on the worksheet.
+
+                Copy:   Copies one or more cells to a new location. The F9
+                        function key is used to set the 'type' of cell copy
+                        that is to take place - relative (rel), absolute
+                        (abs), or value (val).
+
+                         - Relative (rel) copy means that when you copy
+                           a cell's formula from one location to another,
+                           the 'direct' Cell Addresses within the formula
+                           of the new cell will be adjusted (see Section
+                           6:8 - Direct Cell Addresses).  That is, the
+                           'direct' Cell Addresses in the new cell will be
+                           modified to reference cells that are the same
+                           relative distance away from the new cell as they
+                           were from the original cell.
+
+                         - Absolute (abs) copy means that when you copy
+                           a cell's formula from one location to another,
+                           the Cell Addresses (within that formula) will
+                           not be adjusted.  They will reference the same
+                           cells as the original cells do.
+
+                         - Value (val) copy means that only values (not the 
+                           formulas associated with them) are copied. When 
+                           using the (val) option to copy the contents of a 
+                           POINT, SEGMENT, POLYGON, or MATRIX to another 
+                           location, the results will be place into a 
+                           'NULL' POINT, SEGMENT, POLYGON, or MATRIX 
+                           (refer to Sections 9:6 and 10:7 for an expanded 
+                           discussion). 
+
+                        NOTE: Cells can be COPIED or MOVED from one worksheet
+                        level to another with the aide of the Forward Slash
+                        (/) 'Goto' Command discussed in Chapter 7.  To do
+                        it, simply type a slash (/) instead of using the
+                        arrow keys from the prompt, requesting you to move
+                        the Cell Pointer the the TARGET cell location.  This
+                        will produce a new series of prompts that will allow
+                        you to jump to any Row, Column, or WORKSHEET LEVEL.
+       
+               Insert:  Adds a new Row or Column (depending on the setting
+                        of function key F8) above the Cell Pointer's
+                        current position.
+
+               Delete:  Deletes the Row or Column (depending on the setting
+                        of function key F8) that currently contains the
+                        Cell Pointer.
+
+          f8   Defines the range of cells that will be affected by the F7
+               setting.
+    
+          f9   The option associated with this key will only appear when
+               either the 'Shift' or 'Copy' command have been set with the
+               F7 function key.  Otherwise, the function of this key is
+               disabled and nothing will appear in its display.
+
+               Left, Right, Up, Down:  These options only become available
+                                       when the F7  'Shift' command has
+                                       been set.  They establish the 
+                                       direction the cell(s) will be moved.
+
+                 (rel), (abs), (val):  These choices only become available
+                                       when the F7 'Copy' Command has been
+                                       set.  They establish the 'type' of
+                                       cell copy that will take place - a
+                                       Relative, Absolute, or Value cell
+                                       copy.  (Refer back to the discussion
+                                       on the F7 'copy' option.)
+
+          f0   Executes the user defined option setup by the F7, F8, and F9
+               function keys.
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:3   FILES
+    -----------------------------------------------------------------------
+
+                         .........
+                         :  f3   :  From the "Root Menu", press F3
+                         : FILE  :
+      _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   |
+     | DONE  | |Report>| | Load< | | Save> | | Text< | . . .
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   Copies a worksheet to a standard text file located in 
+                   your current working directory.  The report will appear 
+                   exactly as it does on your screen.  You can then use the 
+                   DOS 'PRINT' command to sent the file to your printer.  
+                   The report will begin with the first row that appears on 
+                   your screen and will continue to whatever row you specify 
+                   or until no  further data is found - whichever comes 
+                   first. You may also set the maximum number of characters 
+                   per line (upto 132) or use the default setting that 
+                   limits the report to the cell visible on the screen. 
+
+          f3   -   LOADS (opens) a worksheet file, located in the current 
+                   working directory, that has been saved using REBEL's 
+                   native ".RB2" format.  Simply type in the name of the 
+                   file that contains your worksheet and press <Enter>.  It 
+                   is not necessary to include the .RB2 extension. You can 
+                   also review all of the worksheets that are currently 
+                   available by pressing any of the <Arrow> keys - PRIOR TO 
+                   ENTERING A FILE NAME.  Each time you do this, one of the 
+                   files that has a ".RB2" extension will be displayed 
+                   within the prompt's square brackets []. When the file you 
+                   are interested in appears, press the <Enter> key to load 
+                   it.  The tilde (~) wildcard character can be used to 
+                   create a pattern that will reduce the number of files you 
+                   must to search through.  For example, "test~" would 
+                   locate: test01, testA, test12, etc..  To use this feature, 
+                   however, you must remember to enter the pattern BEFORE 
+                   the first arrow key is pressed.  That is, once an arrow 
+                   key is pressed - the pattern is set.  If you press an 
+                   arrow key before entering a pattern, the default pattern 
+                   will be used (i.e.  "~.RB2" which is all of the .RB2 
+                   files in the current working directory!). You may want to 
+                   experiment with this option to see how it works. 
+
+          f4   -   SAVES (closes) the currently active worksheet to a disk 
+                   file, using REBEL's native ".RB2" format.  It is not 
+                   necessary to include the .RB2 extension when you enter 
+                   the file name. 
+
+          f5   -   Opens a TEXT FILE and loads it into the currently active 
+                   worksheet, starting at the cell highlighted by the Cell 
+                   Pointer.  Each 'word' or 'number' within the text file 
+                   will be loaded into an individual cell and will be 
+                   'typed' as a LABEL.  Groups of words can be directed to a 
+                   single cell by enclosing the string within double quotes 
+                   ("...").  Existing data, within the worksheet, will not 
+                   be overwritten. 
+
+                   Text files can also be used to load the ARRAY SPACE of a
+                   cell.  To do this, the cell must either be empty or
+                   contain an expression (i.e. be a FORMULA cell).  A
+                   "HEADER LINE", that describes 'what' and 'where' to
+                   start loading the array, MUST precede the values to be
+                   loaded.  The HEADER must begin with a tilde (~) and end
+                   with a semicolon (;).  The exact format is defined as 
+                   follows:
+
+                     ~[Row,Column,MaxArraySize,Worksheet],START,END;
+
+                   The following 5 line file, for example, will cause an 
+                   Array Space (containing 15 elements) to be defined for 
+                   the cell at [55,66].  It will then load 4 values (25.0 
+                   thru 28.0), starting at array position 8 and ending at 
+                   array position 12. 
+
+                                    ~[55,66,15,1],8,12;
+                                    25.0
+                                    26.0
+                                    27.0
+                                    28.0
+
+                   The important thing to remember is that the number in the
+                   ARRAY ELEMENT position of the HEADER LINE will define or
+                   re-define a cell's array Area Space - prior to loading
+                   it!  Also note that the  'start' and 'end' values, which
+                   follows the HEADER's cell address, define the exact array
+                   positions to be loaded (8 thru 12).  More than one such
+                   header entries may be included in a file.
+
+                   In addition to fixed numbers, expressions that access
+                   values in other cells throughout the worksheet, can also
+                   be used to load the array space.  Take the following
+                   example.  Here, 4 values (from another worksheet level)
+                   are added to a fixed number and then loaded into the
+                   array elements 8 through 12.
+
+                                    ~[55,66,12,1],8,12;
+                                    25.0 + [1,1,,2]
+                                    26.0 + [1,2,,2]
+                                    27.0 + [1,3,,2]
+                                    28.0 + [1,4,,2]
+
+
+                           _______   _______   _______   _______   _______
+                          |  f6   | |  f7   | |  f8   | |  f9   | |  f0   |
+                    . . . |       | |       | |ListDir| |ChngDir| | Clear |
+
+          f8   -   LISTS the files in the Current Working Directory.  You
+                   can control the number of files that will be displayed
+                   by using the tilde (~) wildcard character to form a
+                   specific pattern.  The default pattern (~.~) will
+                   display all files.  Press the <Enter> key to accept
+                   the default or enter your own pattern.
+
+          f9   -   CHANGES the Current Working Directory.
+
+          f0   -   CLEARS the currently active worksheet.
+
+    -----------------------------------------------------------------------
+    Section 4:5   SCRIPTS
+    -----------------------------------------------------------------------
+
+         The following menu options allow you to 'attach' Script Libraries,
+         view the Script Index, adjust the size of the Swap Area, and
+         assign scripts to function keys - all without exiting the program.
+         Chapter 11 contains a detailed discussion of each of these topics.
+
+                                             .........
+                                             :  f5   :
+                                             :SCRIPTS:
+      _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   |
+     | DONE  | |       | |       | |Setfkey| | FKEYS | . . .
+
+          f1   -   Returns you to the Root Menu.
+
+          f4   -   Allows you to assign a SCRIPT (containing an empty
+                   argument list) to a function key that can be accessed 
+                   from the (f5) FKEYS menu.  This option will prompt
+                   you for the function key number and the name of the
+                   script.  Note: Function key f1 is reserved for the
+                   DONE option and can not be used.
+
+          f5   -   Accesses a menu of USER DEFINED function keys that
+                   may have scripts assigned to them (see f4 above).
+
+
+
+                           _______   _______   _______   _______   _______
+                          |  f6   | |  f7   | |  f8   | |  f9   | |  f0   |
+                    . . . |       | | Index | | Attach| | Detach| |SwpArea|
+
+
+          f7   -   Used to view summary information about each script
+                   that is contained in the Script Index.
+     
+                      -  The SIZE of the script in bytes
+                      -  Whether script is loaded in Swap Area
+                      -  The NAME of the script's library
+                      -  The Library's Version Number
+                      -  Version of BUILD.EXE used to create library
+                      -  Version of REBEL required to run script
+
+                   A maximum of 64 entries can be made in this index. The
+                   <Esc> key can be used to exit this option at any time.
+
+          f8   -   Attaches a (.REB) Script Library to the current
+                   spreadsheet session by loading certain header
+                   information about each script into a special Script
+                   Index.  Note, only the scripts contained in this
+                   index can be accessed by the worksheet.  (Also see
+                   the -L option discussed in Section 11:2).
+
+          f9   -   Clears the Script Index, allowing you to 'attach' a
+                   new set of script libraries (see f7 and f8).
+
+          f0   -   Allows you to increase or decrease the size of the
+                   Swap Area, which is used by the Script Manager to
+                   execute the scripts listed in the Script Index.  The
+                   Swap Area must be at least as large as the biggest
+                   script that will be accessed by the worksheet.  You
+                   can check the size the the present Swap Area by
+                   selecting this option and then pressing <Enter>. The
+                   size of the Swap Area is dislayed within the square
+                   brackets [].  (Also see the -M option discussed in
+                   Chapter 11).
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:6   WINDOWS
+    -----------------------------------------------------------------------
+
+                                                 .........
+                   From the "Root Menu", press   :  f6   :
+                                                 :WINDOWS:
+      _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   |
+     | DONE  | | RmvWdw| |HorzWdw| | ChgWdw| |VertWdw| . . .
+
+                           _______   _______   _______   _______   _______
+                          |  f6   | |  f7   | |  f8   | |  f9   | |  f0   |
+                    . . . | Width | | Level | |<Margin| |  SET  | |Margin>|
+
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   Removes the currently active window  (i.e. the one
+                   that contains the Cell Pointer).  The last window can
+                   not be removed.
+
+          f3   -   Creates a Horizontal Window, beginning at the Cell 
+                   Pointer's position.
+
+          f4   -   Moves the Cell Pointer to the Next Window - if one 
+                   exists.  (See the <Tab> Command in Chapter 7 for a
+                   faster way of doing this.) 
+
+          f5   -   Creates a Vertical Window, beginning at the Cell
+                   Pointer's position.
+
+          f6   -   Changes the COLUMN WIDTH of the column that contains the
+                   Cell Pointer.  You will also be asked to enter the number
+                   of the last column you wish this change to affect.  Any
+                   change made by this option will override the default
+                   column setting (see Section 4:8 - dWidth). 
+
+          f7   -   Allows you to change the Worksheet LEVEL of the current
+                   window.  (The level of each window is displayed in the
+                   extreme left hand corner of the Column Bar - surrounded
+                   by angle brackets <>.).
+
+          f8   -   Moves the Cell Pointer to the next Margin - to the left
+                   of it's current position (see function key F9).  
+
+          f9   -   Sets or Removes a MARGIN in the column occupied by the
+                   Cell Pointer.  Once set, a margin cannot be crossed by
+                   pressing an arrow key.  (A margin, however, can be
+                   crossed with the PgUp, PgDn, End, and Home keys or with
+                   the "/" Goto Command discussed in Chapter 7).
+
+          f0   -   Moves the Cell Pointer to the next Margin - to the right
+                   of it's current position (see function key F9).  
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:7    UTILITY
+    -----------------------------------------------------------------------
+
+
+         IMPORTANT:  Function keys F2 thru F6 are used to display the 
+         points, lines, and polygons created by the Coordinate Geometry 
+         Package described in Chapter 9.  To provide compatibility with as 
+         many PCs as possible, REBEL uses video BIOS calls for all of its 
+         graphics displays.  While this approach extends graphic
+         capabilities to a wide range of IBM-PCs and compatibles, it does
+         not always take full advantage of your system's video adapter.
+         For example, a maximum of three colors can be displayed at a time.
+
+                                                 .........
+                    From the "Root Menu", press  :  f7   :
+                                                 :UTILITY:
+      _______   _________________   _________________   _______ 
+     |  f1   | |  f2      color  | |  f4     aspect  | |  f6   |    
+     | DONE  | |         320x200 | |          1.33   | |  Plot |...
+               |                 |
+               |           b/w   |
+               |         320x200 |
+               |                 |
+               |           b/w   |
+               |         640x200 |
+
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   This key is used to set the Graphics Video Mode used by 
+                   your PC's ROM BIOS functions.  Three modes are 
+                   available:  1) Low Resolution Color;  2) Low Resolution
+                   Black and White; and 3) High Resolution Black and White. 
+
+          f4   -   This key is used to set the Video Aspect Ratio, which is 
+                   used by the plotting routines to eliminate distortion. It 
+                   is not absolutely necessary that it be set unless it is 
+                   important that the dimensions of the figures you plot are 
+                   proportional.  The ratio is formed by the screen's 
+                   horizontal and vertical dimensions.  Since these 
+                   dimensions can differ from system to system, this ratio 
+                   must be set to correct for distortion.  After measuring 
+                   the HORIZONTAL and VERTICAL dimensions of your screen 
+                   (using any unit of measure: inches, centimeters, etc..), 
+                   simply press this function key and enter the values at 
+                   the appropriate prompt. 
+
+           f6  -   This function key is used to plot individual or multiple 
+                   POINTS, SEGMENTS, and POLYGONS created by the Coordinate 
+                   Geometry (COGO) Package described in Chapter 9.  To plot 
+                   the coordinates defined by one of these cell types, move 
+                   the Cell Pointer to the cell in question and press F6.  
+                   You can continue to identify other POINTS, SEGMENTS and 
+                   POLYGONS in this same fashion until you press <Enter>, 
+                   at which time everything will be displayed. You can exit 
+                   from the graphics mode by pressing any key. 
+
+
+                                     _______   _______   _______   _______
+                                    |  f7   | |  f8   | |  f9   | |  f0   |
+                             . . .  | Memory| | Affect| |CelCalc| |FulCalc|
+
+           
+          f7   -   Displays the remaining amount of available MEMORY.
+
+          f8   -   Points out all of the cells that are USED BY and
+                   AFFECTED BY the cell that is highlighted by the Cell
+                   Pointer.
+
+          f9   -   RECALCULATES the CELL highlighted by the Cell Pointer.
+                   (The '.' Dot Command can also be used to recalculate a
+                   cell - refer to Chapter 7:0).
+           
+          f0   -   RECALCULATES every cell on the worksheet, one time, 
+                   beginning at cell [1,1] and moving through the worksheet 
+                   in th left to right direction. 
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:8    DEFAULT SETTINGS
+    -----------------------------------------------------------------------
+
+                                                   .........
+                      From the "Root Menu", press  :  f8   :
+                                                   :DEFAULT:
+      _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   |
+     | DONE  | | dRange| |       | | dWidth| |dDecmal| . . .
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   Whenever a change is made to the worksheet, this setting 
+                   will determine the maximum number of times a formula that 
+                   contains a RANGE OPERATION will be recomputed (i.e. in 
+                   the event of a circular reference).  Also see Section 
+                   6:12 - Optimizing Your Worksheet. 
+
+           f4  -   Changes the default COLUMN WIDTH setting for the current
+                   worksheet.  This option will affect ALL of the columns
+                   that have not been individually set with the column
+                   width option under the WINDOWS menu (see Section 4:6).
+
+          f5   -   Changes the default DECIMAL display format setting that
+                   is used whenever a NEW cell is created.  This option
+                   is not intended to be used to modify the decimal display
+                   format of cells that differ from the default value (for
+                   that, see Section 4:1 - x.xx).  Remember, when you use
+                   this option to reset the decimal display format, it will
+                   affect EVERY cell that HAS NOT had it format reset with
+                   the "x.xx" command described in Section 4:1.
+
+
+                           _______   _____________________________________
+                          |  f6   | |  f7        f8        f9        f0   |
+                    . . . |       | | Cell      White     Low       OKAY? |
+                                    | Row       Brw/Ylw   High            |
+                                    | Col       Magenta                   |
+                                    | ALL       Red                       |
+                                    | Range     Cyan                      |
+                                    |           Green                     |
+                                    |           Blue                      |
+    
+    
+         Function keys F7 thru F9 work together to form a 'user defined
+         option' that is executed when the F10 (OKAY?) key is pressed. 
+         The F7, F8, and F9 keys do not perform any action other than to
+         set up the option.
+
+          f7   -   Defines a range of cell(s) that will be reset to display 
+                   the DEFAULT COLOR - no matter what their current color 
+                   setting is. 
+
+          f8   -   Defines the DEFAULT COLOR that will be used to display 
+                   all new cells, as well as, the existing cells that 
+                   display old default color.  This command will force all 
+                   of the cells within the range of cells defined by the F7 
+                   key to display the default color - overriding any other 
+                   setting. 
+
+          f9   -   Sets the display INTENSITY of the default color to High
+                   or Low.
+
+          f0   -   Executes the command option setup by function keys
+                   <F7> thru <F9>.
+
+
+
+    -----------------------------------------------------------------------
+    Section 4:9    DISPLAY FORMATS
+    -----------------------------------------------------------------------
+
+                                                        .........
+                          From the "Root Menu", press   :  f9   :
+                                                        :FORMATS:
+
+      _______   _______   _______   _______   _______
+     |  f1   | |  f2   | |  f3   | |  f4   | |  f5   |
+     | DONE  | |   %   | |  Dec  | |  Sci  | |  Hex  | . . .
+
+                           _______   _______   _______   _______   _______
+                          |  f6   | |  f7   | |  f8   | |  f9   | |  f0   |
+                    . . . |  Oct  | |  Bin  | | Comma | |   $   | |Bearing|
+
+
+          f1   -   Returns you to the Root Menu.
+
+          f2   -   Sets a cell's numeric display mode to PERCENT.
+                   For example, 0.255 would be displayed:  25.5%
+
+          f3   -   Sets a cell's numeric display mode to DECIMAL (default).
+                   For example, 255 would be displayed:  255.00
+
+          f4   -   Sets a cell's numeric display mode to SCIENTIFIC NOTATION.
+                   For example, 255 would be displayed:  2.55e+02
+
+          f5   -   Sets a cell's numeric display mode to HEXADECIMAL.
+                   For example, 255 would be displayed:  0xFF
+
+          f6   -   Sets a cell's numeric display mode to OCTAL.
+                   For example, 255 would be displayed:  0377
+
+          f7   -   Sets a cell's numeric display mode to BINARY.
+                   For example, 255 would be displayed:  11111111
+
+          f8   -   Sets a cell's numeric display mode to insert a comma
+                   after every third digit.  For example, 2500 would be
+                   displayed:  2,500
+
+          f9   -   Sets a cell's numeric display mode to CURRENCY.
+                   For example, 255 would be displayed:  $255.00
+
+          f0   -   Sets a cell's numeric display mode to a BEARING ANGLE.
+                   For example, 145.3020 would be displayed: "N45 30'20"E
+                   (Refer to Section 9:2:4 of the Coordinate Geometry
+                   Package).
+
+
+            NOTE:  Numbers can be entered, from the Input Line, in both 
+            hexadecimal and octal formats (in addition to the standard
+            decimal format).  To enter a hexadecimal number, precede it
+            with a "0x"  (e.g.  0xFF).  Octal numbers can be entered by
+            beginning them with a zero (0).  JUST REMEMBER, DO NOT BEGIN
+            A STANDARD NUMBER WITH A ZERO - UNLESS, OF COURSE, IT IS ZERO!

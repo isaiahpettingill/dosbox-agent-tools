@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -lt 3 ]; then
+    echo "usage: create-image SIZE_KIB OUTPUT.IMG FILE [FILE...]" >&2
+    exit 2
+fi
+
+size=$1
+output=$2
+shift 2
+
+case "$size" in
+    360|720|1440) ;;
+    *)
+        echo "unsupported floppy size: $size (use 360, 720, or 1440)" >&2
+        exit 2
+        ;;
+esac
+
+rm -f "$output"
+dd if=/dev/zero of="$output" bs=1024 count="$size" status=none
+mformat -f "$size" -v DOSDISK -i "$output" ::
+mcopy -o -s -i "$output" "$@" ::/
+mdir -i "$output" ::/

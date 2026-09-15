@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+cd /opt/dosroot/WORK
+ln -sf /opt/dosroot/TP/BIN/TPC.EXE TPC.EXE
+cp /opt/dosroot/TP/BIN/TPC.CFG TPC.CFG
+exec ntvdm -r:/opt/dosroot -u TPC.EXE "$@"

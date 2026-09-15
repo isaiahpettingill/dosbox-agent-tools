@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+project=${1:?usage: build-dwed PROJECT_PATH}
+root=/work
+stage="$root/$project/build/stage"
+build="$root/$project/build"
+
+run_dos() {
+    directory=$1
+    shift
+    (
+        cd "/opt/dosroot/WORK/$directory"
+        ntvdm -r:/opt/dosroot -u "$@"
+    )
+}
+
+rm -rf "$build"
+mkdir -p "$stage/src" "$stage/bin2obj"
+cp -a "$root/third_party/dwed/SRC/." "$stage/src/"
+cp "$root/third_party/libsystem2/"*.PAS "$stage/src/"
+cp -a "$root/third_party/dwed/TOOLS/BIN2OBJ/." "$stage/bin2obj/"
+ln -s /opt/dosroot/TP/BIN/TPC.EXE "$stage/src/TPC.EXE"
+cp /opt/dosroot/TP/BIN/TPC.CFG "$stage/src/TPC.CFG"
+
+cp "$stage/bin2obj/BIN2OBJ.COM" "$stage/src/BIN2OBJ.COM"
+
+run_dos "$project/build/stage/src" TPC.EXE -B '-$D-' '-$G-' '-$R-' '-$S-' '-$I-' '-$E-' HLPC.PAS
+run_dos "$project/build/stage/src" ./HLPC.EXE DWED.TXT DWEDHELP.HLP
+run_dos "$project/build/stage/src" ./BIN2OBJ.COM DWEDHELP.HLP DWEDHELP.OBJ HELPBIN
+run_dos "$project/build/stage/src" TPC.EXE -B '-$D-' '-$L-' '-$G-' '-$R-' '-$S-' '-$I-' '-$E-' '-$Q-' '-$B-' DWEDOVL.PAS
+
+cp "$root/third_party/dwed/BIN/DWED.EXE" "$build/DWED.EXE"
+cp "$stage/src/DWEDOVL.EXE" "$build/DWEDOVL.EXE"
+cp "$stage/src/DWED.CFG" "$build/DWED.CFG"

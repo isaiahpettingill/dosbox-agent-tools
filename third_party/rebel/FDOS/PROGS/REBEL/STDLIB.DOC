@@ -1,0 +1,199 @@
+
+
+                   _ __     __     __      __      _                     
+                  ' )  )   /  `   /  )    /  `    /      tm
+                   /--'   /--    /--<    /--     /
+                 /    \  (____, (____)  (____,  (____,
+
+                   (c) Copyright 1993  Brad L. Smith
+                          All Rights Reserved
+
+
+                       THE 'STDLIB' SCRIPT LIBRARY
+
+                             Version 1.01
+
+
+
+    1)  To access the scripts in this library:    REBEL -L:STDLIB
+
+
+        Notice that the names of the scripts used in this library use
+        upper case letters, this was done so you can distinguish them
+        from built-in functions (which, for the most part, use lower
+        case letters).
+
+
+    ______________________________________________________________________
+    FINANCIAL FUNCTIONS:
+     
+
+       CTERM (interest,fv,pv)  =  term
+
+            Calculates the number of periods (term) required for a
+            lump sum (pv) to reach a future amount (fv) at a given
+            periodic interest rate.
+     
+            Example:    +CTERM(0.09/12,6543.28,5000.00)  =   36  
+
+
+       FV (payment,interest,term)  =  future_value 
+     
+            Calculates the future value (amount accumulated), given
+            the size of the payment, the interest rate per period, and
+            the term (i.e. the total number of periods).
+
+            Example:   +FV(159.00,0.09/12,12*3)  =    $6543.28
+
+
+      PMT (principle,interest,term)  =  payment
+
+            Calculates the size a payment required to pay off the
+            principle on a loan, given the interest rate per period
+            and the term (i.e. the total number of periods).
+
+            Example:    +PMT(5000.00,0.09/12,12*3)  =   $159.00
+
+
+      PV (payment,interest,term)  =  present_value
+
+            Calculates the present value (principle of a loan), given
+            the interest rate per period and the term (i.e. the total
+            number of periods).
+
+            Example:    +PV(159.00,0.09/12,12*3)  =   $5000.04
+
+
+      RATE (fv,pv,term)  =  interest_rate 
+
+            Calculates the interest rate, per period, required to
+            increase an initial lump sum (pv) to a future value (fv)
+            over a given number of periods (term).
+     
+            Example:    +PMT(6543.28,5000.00,12*3)  =   0.0075  
+
+
+      TERM (payment,interest,fv)  =  term 
+
+            Calculates the number of periods (term) required to reach a
+            future value (i.e. an accumulated amount).
+   
+            Example:   +TERM(159.00,0.09/12,6543.28)   =   36  
+
+
+    ______________________________________________________________________
+    STATISTICAL FUNCTIONS:
+
+
+      In each of the following functions, two complete cell references
+      (r,c,e,z and rr,cc,ee,zz) are used to identify a 'range' of cells
+      on the worksheet or a series of values within the 'array' area of
+      a single cell.
+
+           where:
+
+               "r" and "rr"  are row numbers
+               "c" and "cc"  are column numbers
+               "e" and "ee"  are array element numbers
+               "z" and "zz"  are worksheet level numbers
+
+      The values used for the array element parameters ('e' and 'ee')
+      determine which case is used.  For example, when defining a 'range'
+      of cells, the 'e' and 'ee' parameters MUST be set to zero (0).
+      The (r,c,z) and (rr,cc,zz) parameters are then used to identify the
+      upper left and lower right corners of the range.
+
+      When operating on an 'array', the two cell references defined by
+      the (r,c,z) and (rr,cc,zz) parameter MUST BE EQUAL; AND the 'e'
+      parameter MUST be set to a value equal to or greater than one (1)
+      and the 'ee' MUST be set to a value equal to or greater than 'e'.
+
+
+      SUM (r,c,e,z,rr,cc,ee,zz)
+
+            Sums the values within a 'range' of cells or within a
+            cell's 'array' area (see above note).
+
+            Example:  Sum the values between [1,1] and [9,7]
+
+                      +SUM(1,1,0,1,9,7,0,1)   
+
+            Example:  Sum the first 10 array values of [3,4]
+
+                      +SUM(3,4,2,1,3,4,10,1)   
+
+
+      MEAN (r,c,e,z,rr,cc,ee,zz)
+
+            Returns the mean value found within a 'range' of cells
+            or within a cell's 'array' area.
+
+      VAR (r,c,e,z,rr,cc,ee,zz)
+
+            Returns the variance of the values defined within a
+            'range' of cells or within a cell's 'array' area.
+
+      DEV (r,c,e,z,rr,cc,ee,zz)
+
+            Returns the standard deviation of the values defined
+            within a 'range' of cells or within a cell's 'array' area.
+
+      MAX (r,c,e,z,rr,cc,ee,zz)
+
+            Returns the maximum value found within a 'range' of cells
+            or within a cell's 'array' area.
+
+      MIN (r,c,e,z,rr,cc,ee,zz)
+
+            Returns the minimum value found within a 'range' of cells
+            or within a cell's 'array' area.
+
+
+    ______________________________________________________________________
+    CONVERSIONS ROUTINES:
+
+
+      CM_IN (centimeter)  =  inches
+
+      IN_CM (inches)  =  centimeter
+
+      METERS_FT (meters)  =  feet
+
+      FT_METERS (feet)  =  meters
+
+      FT_MILES (feet)  =  miles
+
+      MILES_KM (miles)  =  kilometers
+
+      KM_MILES (kilometers)  =  miles
+
+      SQFT_ACRES (sqft)  =  acres
+
+      ACRES_SQFT (acres)  =  sq feet
+
+      ACRES_SQKM (acres)  =  sq kilometers
+
+      GRAMS_OZ (grams)  =  ounces
+
+      GRAINS_OZ (grains)  = ounces
+
+      OZ_LITERS (oz)  =  liters
+
+      OZ_CUPS (oz)  =  cups
+
+      OZ_TEASPOONS (oz)  =  teaspoons
+
+      OZ_TABELSPOONS (oz)  =  tablespoons
+
+      OZ_GALLONS (oz)  =  gallons
+
+      GALLONS_OZ (gallons)  =  ounces
+
+      GALLONS_LITERS (gallons)  =  liters
+
+      LITERS_GALLONS (liters)  =  gallons
+
+      LITERS_CUIN (liters)  =  cu inches
+
+      CUIN_LITERS (cuin)  =  liters
+

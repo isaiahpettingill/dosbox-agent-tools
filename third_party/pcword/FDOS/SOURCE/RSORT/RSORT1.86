@@ -1,0 +1,1077 @@
+;record sort version 1.1 copyright 1991-1999 andrew sprott. All rights reserved.
+
+		;the segment registers are the code segment register (cs) the data
+		;segment register (ds) the extra segment register (es) and the stack
+		;segment register (ss)
+
+		;the code segment register (cs) points to the program and cannot be
+		;altered except when doing a far jump, call or interrupt
+
+		;the 16 bit segment registers are actually 20 bit addresses - the
+		;contents of the registers are shifted left four times.
+
+		;four other registers are used to address a 64k chunk that starts where
+		;one of the segment registers point to.
+
+		;the four other registers are the base register (bx) source index
+		;register (si) the destination index register (di) and the stack base
+		;pointer (bp)
+		;the segment register points to the start of a segment in memory and
+		;the offset register points to an offset in that segment
+
+		;the first 256 bytes in all dos programs is the program segment prefix
+		;offset 081h 129 is the start of the command tail that is passed to
+		;the program from the dos prompt
+		;offset 080h 128 is the length of the command tail, not including the
+		;carriage return at the end of the command tail
+
+		;on entry to any .com file all four segment registers point to the
+		;start of the program segment prefix
+
+		;ax bx cx dx are the general purpose registers, they can also be used
+		;as 8 bit registers al,ah bl,bh cl,ch dl,dh
+
+		;equates for instructions
+
+		pull equ pop
+		o equ offset
+
+		;bit flags for options
+
+char_bit equ 1	;sort characters flag
+word_bit equ 2	;sort words flag
+para_bit equ 4	;sort paragraph/lines flag
+field_bit equ 8	;sort fields flag
+word_field_bit equ word_bit or field_bit	;sort words flag
+record_bit equ 010h	;sort records flag
+
+t_bit equ 020h	;sort by translation table bit
+case_bit equ 040h
+order_bit equ 080h	;sort in descending order flag
+size_bit equ 0100h	;sort by size flag
+line_feed_bit equ 0200h	;sort by size flag
+duplicate_bit equ 0400h	;delete duplicate items flag
+stderr equ 2	;standard output handle
+
+		;set up stack
+
+		mov ax,w[2]	;load segment to top of memory
+		sub ax,01000h	;move back a segment
+		cli	;disable interrupts
+		mov ss,ax	;set stack pointer
+		mov sp,-2
+		sti	;enable interrupts
+
+		;set up pointers to pointer array
+
+		mov w pointer_array_write+2,ax	;store segments
+		mov w pointer_array_read+2,ax
+		mov ax,0f000h	;allow 4k for stack
+		mov w pointer_array_write,ax	;store offsets
+		mov w pointer_array_read,ax
+
+		;get number of columns in screen
+
+		mov ax,cs	;copy program segment
+		mov w start_file+2,ax
+		mov w char_table+2,ax
+		mov w separators_ptr+2,ax
+		mov w leading_seps+2,ax
+		mov ah,0fh	;load function argument
+		int 010h
+		mov al,ah	;save columns in screen
+		xor ah,ah
+		mov w columns,ax
+		mov ax,02523h	;set ctrl-c interrupt
+		mov dx,o ctrl_c
+		int 021h
+
+		;set sort defaults
+
+		mov w sort_field,0	;dont sort by any field
+		mov w pointer_size,8	;store array element size
+		mov cl,b[080h]	;load length of command tail
+		xor ch,ch	;clear high register
+		or cx,cx	;is there a command tail?
+		jne >a1	;vet it if there is
+
+		;write program information to screen
+
+		mov dx,o help1	;load offset to welcome screen
+c1:
+		mov ah,9	;load function parameter
+		int 021h	;write string to screen
+		xor ah,ah	;fetch the key
+		int 016h
+
+		;check if keypress is for help screen
+
+		mov dx,o help1	;load offset to message
+		cmp al,'1'	;help screen 1?
+		je c1	;write screen if yes
+		mov dx,o help2	;load offset to message
+		cmp al,'2'	;help screen 1?
+		je c1	;write screen if yes
+		mov dx,o help3	;load offset to message
+		cmp al,'3'	;help screen 1?
+		je c1	;write screen if yes
+		mov dx,o help4	;load offset to message
+		cmp al,'4'	;help screen 1?
+		je c1	;write screen if yes
+		mov ax,04c00h	;load function parameter
+		int 021h	;exit
+
+		;vet command tail
+
+a1:
+		mov di,081h	;load offset to start of command tail
+		mov al,' '	;load search character
+		repe	;repeat until not equal (cx=cx-1)
+		scasb	;compare character at es:di with al
+		jcxz c1	;write banner if end of tail (cx=0)
+		dec di	;move offset over first character
+		inc cx	;add one to tail count
+		mov w input_file_offset,di	;save offset to start of filename
+
+		;the 'rep' prefix can be rep, repe or repne. in either case the cx
+		;register is decremented. rep repeats the following instruction until
+		;the cx register is zero, repe does the same only if the zero flag is
+		;set and repne repeats when the zero flag is clear
+
+		;the following instruction can be one of five; movs, lods, stos, cmps
+		;or scas with a b for byte or w for word suffixed ie movsb
+		;each instruction does several things, in all cases the si and/or di
+		;registers are incremented or decremented depending on the direction
+		;flag
+
+		;the lods instruction loads a byte or word pointed to by ds:si into the
+		;al or ax register
+		;the stos instruction stores the value in al or ax to the location
+		;pointed to by es:di
+		;the movs instruction moves a byte or word pointed to by ds:si to the
+		;location pointed to by es:di
+		;the cmps instruction compares - subtracts without altering anything -
+		;the byte/word pointed to by es:di with the byte/word pointed to by
+		;ds:si
+		;the scas instruction compares - subtracts without altering anything -
+		;the byte/word pointed to by es:di with the al/ax register
+
+		;move to end of input filename
+
+		repne	;repeat until equal cx=cx-1
+		scasb	;keep going until es:di=al or cx=0
+		jcxz c1	;write banner if end of tail
+		mov b[di+0ffffh],0	;store zero at end of input filename
+
+		;store offset to start of second filename
+
+		repe	;repeat until cx=0 or not equal to al
+		scasb
+		je c1	;exit if end of tail
+		dec di	;decrement offset
+		inc cx
+		mov w output_file_offset,di	;store offset to output filename
+		repne	;repeat until cx=0 or equal to al
+		scasb
+if e		dec di	;decrement offset if space found
+		mov b[di],0	;store zero at end of filename
+		or cx,cx	;anymore arguments?
+if e		jmp open_files	;open input file if not
+
+		;options for sorting are:
+		;c sort characters
+		;w sort words
+		;p sort paragraphs (lines)
+		;f sort by field
+		;r sort by record
+		;n search by nth field (only works if r is set)
+		;s sort by size
+		;d sort in descending order
+		;t sort by translation table
+		;i ignore case (doesn't work if t is set)
+		;o override default field/record markers
+
+		;load character from options string
+
+		inc di	;move offset past zero byte
+c1:
+		call move_non_space	;move to next non space character
+		mov si,di	;load offset to command tail
+		cmp al,'/'	;is char start of argument?
+		je >a1	;check case if it is
+		dec si	;move offset over invalid character
+		call error_exitc	;exit with error
+		db '/ expected$'
+b1:
+		dec si	;move offset over invalid character
+		call error_exitc	;exit with error
+		db 'Argument expected$'
+
+		;check case
+
+a1:
+		jcxz b1	;exit if end of command string
+		lodsb	;load argument
+		dec cx	;decrement tail count
+		call check_case	;check case of char read
+		mov bl,al
+		mov ax,w sorting_flags	;load sort data
+		mov dl,0e0h
+		mov di,si	;load offset to command tail
+
+		;check for e option (don't check for end of file marker)
+
+		cmp bl,'Z'	;is it e for end of file marker?
+		jne >b3	;check for number if not
+		mov b end_of_file,0	;set end of file marker
+		jmp long >c3	;check for next argument
+
+		;check for o option (override field/record markers)
+
+b3:
+		cmp bl,'O'	;is it o for override?
+		jne >b3	;check for number if not
+		call move_non_space	;move to next non space character
+		push di	;save offset to start of argument
+		mov si,di	;load offset to next char
+		mov di,o field_marker	;load offset to marker variables
+		mov bp,2	;load marker count
+		call get_chars	;get field and record markers
+		mov di,si	;load offset to command line
+		pull si	;load offset to start of this argument
+		or bp,bp	;were both markers written?
+if e		jmp long >c3	;move to next char if they where
+		dec si	;move over first char for this argument
+		call error_exitc	;exit with error
+		db 'Field and Record markers expected$'
+
+		;check for t option (sort by translation table)
+
+b3:
+		cmp bl,'T'	;is it t for translation table?
+if ne		jmp long >b3	;check for i if not
+		or b sorting_flags,o t_bit
+		call move_non_space	;move to next non space character
+		mov dx,di
+		dec dx	;move offset over start of filename
+		mov w error_offset,dx	;save it
+		mov al,020h	;write zero byte at next space
+		repne
+		scasb	;move to next space
+if e		dec di	;move offset over space
+
+		;open alternatively ordered character set
+
+a1:
+		xor al,al	;terminate filename
+		stosb
+		push cx,di,es	;save offset and count
+		mov ax,03d00h	;load function parameters
+		int 021h	;open file for reading
+		jc >d1	;exit if error
+
+		;read character set
+
+		mov w handle,ax	;store handle
+		mov w char_file,ax
+		mov ax,256	;load count
+		cwd
+		mov si,o translation_table	;load destination offset
+		mov w free_memory+2,-1	;no need to check for available memory
+		call read_char_table	;write file back to disk
+
+		;save pointer to translation table
+
+		mov bp,ds	;save segment
+		mov dx,cs	;copy segment to workspace
+		mov ds,dx
+		mov es,dx
+		mov bx,o char_file	;load handle
+		call close_handle	;close file
+		jcxz >a3	;move to next argument if ok
+
+		;exit with error
+
+		or ax,ax	;were all bytes read?
+		jne >d1	;exit with error if not
+		mov di,si	;copy pointer to end of buffer
+		mov es,bp
+	es	mov al,b[di-1]	;load last char read
+		rep
+		stosb	;pad remainder of buffer
+		jmp >a3	;move to next argument
+
+		;exit with error
+
+d1:
+		mov si,w error_offset	;load offset to start of filename
+		call error_exit	;exit with error
+		db 'Cant open/read Character Table file$'
+a3:
+		pull es,di,cx	;restore command line offset and count
+		jmp long >c3	;move to next char
+
+		;check for w option (sort words)
+
+b3:
+		cmp bl,'W'	;is it w for word?
+		jne >b3	;check for p if not
+		and al,dl	;set sort by word option
+		or al,o word_bit
+		mov w sorting_flags,ax	;save search flags
+
+		;check if there is any separator characters
+
+		mov w pointer_size,16	;add a extra pointer for word separators
+		call move_non_space	;move to next non space character
+		mov si,di	;load offset to next character
+		mov di,o separators	;load offset to buffer
+		mov bp,cx	;no limit on characters to read
+		inc bp,bp
+		push bp	;save remaining bytes +1
+		call get_chars	;get separators
+		pull ax	;load count from start of separators
+		sub ax,bp	;calculate number read
+		mov w separator_count,ax	;save it
+		jcxz >a4	;open files if end of command tail
+
+		;move offset over last char read
+
+		inc cx	;add it to count
+		dec si	;move offset over marker
+a4:
+		mov di,si	;load offset to command line
+b2:
+		jmp long >c3	;move to next char
+
+		;check for r option (sort records)
+
+b3:
+		cmp bl,'R'	;is it r for record?
+		jne >b3	;check for t if not
+		mov w pointer_size,8	;store array element size
+		and al,dl	;set sort by record option
+		or al,o record_bit
+		mov w sorting_flags,ax	;save search flags
+		call move_non_space	;move to next non space character
+		mov w sort_field,0	;indicate sorting whole record
+		dec di	;decrement command line offset
+		inc cx	;add it to count
+		cmp al,'/'	;is character argument marker?
+		je b2	;move to next argument if it is
+
+		;write field offset
+
+		call get_val	;check for number
+		dw sort_field
+		dec si	;move offset over last character
+		mov di,si
+		jmp >c3	;move to next option
+
+		;check for c option (sort characters)
+
+b3:
+		cmp bl,'C'	;is it c for char?
+		jne >b3	;check for w if not
+		and al,dl	;set sort by character option
+		or al,o char_bit
+		jmp >a3	;move to next char
+
+		;check for p option (sort paragraphs)
+
+b3:
+		cmp bl,'P'	;is it p for paragraph?
+		jne >b3	;check for f if not
+		and al,dl	;set sort by paragraph option
+		or al,o para_bit
+		mov w pointer_size,8	;store array element size
+		jmp >a3	;store array element size
+
+		;check for f option (sort fields)
+
+b3:
+		cmp bl,'F'	;is it f for field?
+		jne >b3	;check for r if not
+		and al,dl	;set sort by field option
+		or al,o field_bit
+		mov w pointer_size,16	;add a extra pointer for word separators
+		jmp >a3	;store array element size
+
+		;check for t option (sort case insensitive)
+
+b3:
+		cmp bl,'I'	;is it i for case insensitive?
+		jne >b3	;check for erase option if not
+		or al,o case_bit
+		jmp >a3	;move to next char
+
+		;check for e option (erase duplicate items)
+
+b3:
+		cmp bl,'E'	;is it e for erase duplicate items?
+		jne >b3	;check for line feed option if not
+		or ah,o duplicate_bit/256
+		jmp >a3	;move to next char
+
+		;check for l option (check for line feed with every carriage return)
+
+b3:
+		cmp bl,'L'	;is it l for line feed?
+		jne >b3	;check for order option if not
+		or ah,o line_feed_bit/256
+		jmp >a3	;move to next char
+
+		;check for d option (sort in descending order)
+
+b3:
+		cmp bl,'D'	;is it d for descending order?
+		jne >b3	;check for size if not
+		or al,o order_bit
+		jmp >a3	;move to next char
+
+		;check for s option (sort by size)
+
+b3:
+		cmp bl,'S'	;is it s for size?
+		je >b3	;set size bit if it is
+		dec si	;move offset over bad character
+		call error_exitc	;exit with error
+		db 'Unknown option$'
+b3:
+		or ah,o size_bit/256	;indicate sort is by size
+
+		;move to next character in option string
+
+a3:
+		mov w sorting_flags,ax	;write option to flags
+c3:
+		jcxz open_files	;open input file if no more arguments
+		jmp c1	;check character if not finished
+
+		;move to next non space character in command line
+
+move_non_space:
+		jcxz >a1	;open files if end of string
+		mov al,020h	;load space
+		repe
+		scasb	;move to next non space char
+		mov al,b[di+0ffffh]	;load non space character
+if ne		ret	;exit if non space character found
+a1:
+		pull ax	;clear return address
+
+		;open input file
+
+open_files:
+		cmp b end_of_file,0ffh	;is end of file option set?
+if e		mov b end_of_file,26	;set end of file marker if yes
+		mov ax,03d00h	;load function parameters
+		mov dx,w input_file_offset	;load offset to filename
+		push dx	;save it
+		int 021h	;open file for reading
+		pull si	;load error offset
+		jnc >a1	;open output file if ok
+		call error_exit	;exit with error
+		db 'Cant open Input file$'
+
+		;check if output file exists
+
+a1:
+		mov w input_handle,ax	;save file handle
+		mov ax,03d00h	;load function parameters
+		mov dx,w output_file_offset	;load offset to filename
+		int 021h	;does file exist?
+		jc >b1	;create output file if not
+		mov w handle,ax	;save handle
+
+		;check if user wants to overwrite output file
+
+		mov bx,o handle	;load handle
+		call close_handle	;close handle
+		mov cx,040h	;load maximum filename length
+		mov dx,w output_file_offset	;load offset to filename
+		mov di,dx
+		xor al,al	;load zero
+		repne
+		scasb	;move to end of filename
+		dec di	;calculate size of filename
+		sub di,dx
+		mov cx,di
+
+		;write filename to output stream
+
+		mov bx,stderr	;load standard output handle
+		mov ah,040h	;load function argument
+		int 021h	;write filename to standard output
+		mov ah,9	;load function parameter
+		mov dx,o overwrite_string	;load offset to message
+		int 021h	;write message to output stream
+
+		;get response
+
+a1:
+		mov ah,1	;load function parameter
+		int 021h	;get keypress
+		call check_case	;check if char is lower case
+		cmp al,'Y'	;is response yes?
+		je >b1	;overwrite file if it is
+		cmp al,'N'	;is response no?
+		jne a1	;get another keypress if not
+		call close_input_file	;close input handle
+		jmp exit	;exit to dos
+
+		;create output file
+
+b1:
+		mov ah,03ch	;load function parameter
+		xor cx,cx	;load attribute
+		mov dx,w output_file_offset	;load offset to asciiz filename
+		push dx	;save it
+		int 021h	;create/truncate output file
+		pull si	;load offset to start of filename
+		jnc >a1	;initialize variables if ok
+		call close_input_file	;close input file
+		call error_exit	;exit with error
+		db 'Cant create Output file$'
+
+		;calculate maximum memory available
+
+a1:
+		mov w output_handle,ax	;save output file handle
+		mov bx,cs	;load base of program
+		add bx,program_end_seg	;calculate program size
+		mov ax,w[2]	;load ram top
+		sub ax,bx	;calculate memory available
+		mov cx,16
+		mul cx
+		mov w free_memory,ax	;save it
+		mov w free_memory+2,dx
+
+		;get size of file
+
+		mov ax,04202h	;load function parameter
+		mov bx,w input_handle	;load handle
+		xor cx,cx	;get size of file
+		mov dx,cx
+		int 021h
+		jc infile_err	;exit if error
+		mov w file_size,ax	;save size of file
+		mov w file_size+2,dx
+
+		;reset input file pointer
+
+		mov ax,04200h	;load function parameter
+		mov bx,w input_handle	;load handle
+		xor cx,cx	;get size of file
+		mov dx,cx
+		int 021h
+		jc infile_err	;exit if error
+
+		;save address to start of file
+
+		les si,w start_file	;load destination pointer
+		mov ax,es
+		call ptr_addr	;convert it to address
+		mov w start_file_addr,ax	;save it
+		mov w start_file_addr+2,dx
+
+		;read file from disk
+
+		mov ax,w input_handle	;copy handle
+		mov w handle,ax
+		call read_write	;read file from disk
+		jcxz >c1	;save address to end of file if ok
+		or ax,ax	;were all bytes read?
+if e		mov ax,8	;load error message
+
+		;exit with error
+
+infile_err:
+		call close_files	;close all handles
+	cs	mov si,w input_file_offset	;load offset to filename
+		call error_exit	;exit with error
+		db 'Cant read Input file$'
+
+		;save address to end of, and size of file
+
+c1:
+		call range_check_ds	;range check pointer
+		call ptr_addr	;calculate address to end of file
+		mov cx,ds	;load segment
+		mov bx,cs	;copy segment to workspace
+		mov ds,bx
+		mov es,bx
+		mov w end_file_ptr,si	;save pointer to end of file
+		mov w end_file_ptr+2,cx
+		mov w end_file,ax	;save address to end of file
+		mov w end_file+2,dx
+		sub ax,w start_file_addr	;calculate size of file
+		sbb dx,w start_file_addr+2
+		mov w file_size,ax	;save size of file
+		mov w file_size+2,dx
+
+		;sort file
+
+		add w file_count,ax	;save file byte count
+		adc w file_count+2,dx
+		or ax,dx	;is there anything to sort?
+		je infile_err	;exit if not
+		call close_input_file	;close file
+		call sort	;sort file
+
+		;write file to disk
+
+		mov ax,cs	;copy segment to workspace
+		mov ds,ax
+		mov b function_argument,040h	;store write to disk argument
+		mov ax,w output_handle	;copy handle
+		mov w handle,ax
+		call read_write	;write file back to disk
+		mov bx,o output_handle	;load handle
+		call close_handle	;close output file
+		jcxz >c1	;exit if success
+		or ax,ax	;were all bytes written?
+		je >d1	;exit if not
+
+		;exit with error
+
+	cs	mov si,w output_file_offset	;load offset to filename
+		call error_exit	;exit with error
+		db 'Cant write to Output file$'
+
+		;exit
+
+c1:
+		mov ax,04c00h	;load ok return code
+		int 021h	;exit to dos
+
+		;exit with error
+
+d1:
+		mov al,8	;load error code
+		call exit_e	;exit with error
+		db 'Disk full$'
+
+		;close input handle
+
+close_all_files:
+		mov bx,o char_file	;load handle
+		call close_handle	;close output file
+close_files:
+		mov bx,o output_handle	;load handle
+		call close_handle	;close output file
+close_input_file:
+		mov bx,o input_handle	;load handle
+
+		;close handle (if open)
+
+close_handle:
+		push ax,cx,si,bp	;save error code and offset to tail
+		xor ax,ax	;exchange handle for zero
+	cs	xchg w[bx],ax
+		mov bx,ax	;load handle
+		mov ah,03e	;load function parameter
+		or bx,bx	;is handle open?
+if ne		int 021h	;close handle if it is
+		pull bp,si,cx,ax	;restore error code
+		ret	;exit
+
+		;read/write file to/from disk
+
+read_write:
+		mov ax,w file_size	;copy size of file
+		mov dx,w file_size+2
+		lds si,w start_file	;load pointer to start of data
+read_char_table:
+	cs	mov w shift_count,ax
+	cs	mov w shift_count+2,dx
+
+		;load byte count
+
+b1:
+		call load_cx	;load count
+		jcxz ret	;write end of file marker if finished
+		call range_check_sptr	;range check destination pointer
+	cs	mov ah,b function_argument	;load function parameter
+	cs	mov bx,w handle	;load handle
+		mov dx,si	;load offset
+
+		;check if there is enough memory for input file
+
+		cmp ah,03fh	;is file being read?
+		jne >a1	;write bytes if not
+	cs	sub w free_memory,cx	;subtract size of file from free space
+	cs	sbb w free_memory+2,0
+		jnc >a1	;read bytes if enough memory
+memory_err:
+		call close_files	;close all handles
+		call exit_e	;exit
+		db 'Insufficient memory$'
+
+		;read/write bytes
+
+a1:
+		push cx,dx	;save offset to start of block
+		int 021h	;read/write batch to disk
+		pull si,cx	;load offset to start of block
+		jc ret	;exit if error
+
+		;check if any bytes written
+
+a1:
+		sub cx,ax	;where all bytes written?
+		jcxz >a1	;move destination pointer if they were
+		or ax,ax	;where any bytes written?
+		je ret	;exit with error if not
+	cs	add w shift_count,cx	;add remainder back to block count
+	cs	adc w shift_count+2,0
+
+		;move destination pointer onward
+
+a1:
+		mov cx,ax	;load bytes written
+		mov di,si	;copy pointer to start of block
+		mov ax,ds
+		mov es,ax
+		call ptr_addr	;convert pointer to address
+		add ax,cx	;add bytes written
+		adc dx,0
+		call addr_ptr	;convert back to pointer
+		mov ds,ax
+
+		;check for end of file marker
+
+	cs	mov ax,w end_of_file	;load end of file marker/flag
+		cmp ah,03fh	;is file being read?
+		jne b1	;write next batch if not
+		cmp al,26	;check for end of file marker?
+		jne b1	;read/write next batch if not
+		repne
+		scasb	;search for end of file marker
+if ne		jmp b1	;read/write next batch if not found
+
+		;ignore remaining bytes in buffer
+
+	cs	add w free_memory,cx	;subtract size of file from free space
+	cs	adc w free_memory+2,0
+
+		;copy pointer to end of file marker and exit
+
+		mov si,di	;copy pointer
+		mov ax,es
+		mov ds,ax
+		xor cx,cx	;indicate file loaded
+	cs	sub w file_count,1	;don't sort end of file marker
+	cs	sbb w file_count+2,0
+		ret	;exit
+
+		;ctrl-c interrupt handler
+
+ctrl_c:
+		call close_all_files	;close all handles
+		call exit_e	;exit
+		db 'Aborted by user$'
+
+		;exit with error
+
+error_exitc:
+		mov ax,0ffh	;indicate error internal
+error_exit:
+		mov bx,cs	;copy segment to variables
+		mov ds,bx
+		mov es,bx
+		mov w sorting_flags,ax	;save error code
+
+		;clear command line of zero bytes
+
+		mov cl,b[080h]	;load length of command tail
+		xor ch,ch
+		mov bp,081h	;load offset to command tail
+		mov bl,32	;add 32 to zero bytes
+sort_error:
+		push si	;save offset to command tail
+		mov di,bp
+		mov si,bp
+
+		;search command line for control codes
+
+a1:
+		lodsb	;load char from line
+		cmp al,32	;is it a control code?
+		jae >a2	;store char if not
+		mov ah,64	;add 64 to control code
+		or al,al	;is it a zero byte?
+if e		mov ah,bl	;load space if it is
+		add al,ah
+a2:
+		stosb	;write char back to command line
+		loop a1	;decrement loop count
+
+		;calculate offset into command tail
+
+		pull si	;restore offset to command line
+		push di	;save offset to end of command line
+		sub si,bp	;calculate offset into command tail
+		mov bx,bp
+	cs	mov ax,w columns	;load screen width
+		or ax,ax	;are there any columns?
+if e		jmp exit	;exit if not
+		mov di,ax
+a2:
+		cmp si,ax	;is command tail smaller?
+		jbe >a1	;write it with error if it is
+		sub si,ax	;move offset right a screen
+		add bx,ax
+		jmp a2	;check again
+
+		;calculate start of command line to be written to screen
+
+a1:
+		shr ax,1	;half screen width
+		add bx,si	;move error char to centre of screen
+		mov si,bx
+		sub bx,ax
+		mov dx,bx	;save offset
+		cmp bx,bp	;is offset to far back?
+		jae >a1	;calculate length of string if not
+		sub si,bp
+		mov ax,si	;save column offset
+		mov dx,bp	;load offset to start of tail if it is
+
+		;write command line to screen
+
+a1:
+		pull cx	;calculate size of string
+		sub cx,dx
+		mov bx,dx	;to end of command tail
+		push ax	;save column offset
+		mov ax,0a0dh
+		cmp di,cx	;is size bigger than screen width?
+		jbe >a1	;set count as screen width if it is
+		mov di,cx	;write carriage return and line feed
+		mov w[bx+di],ax
+		inc di,di
+
+		;write command line to screen
+
+a1:
+		mov cx,di	;load character count
+		add cx,3	;add 3 for leading line feeds
+		sub bx,3	;write codes to start of command line
+		mov w[bx],ax
+		mov b[bx+2],ah
+		mov dx,bx	;load offset to command line string
+		mov bx,stderr	;load standard output handle
+		mov ah,040h	;load function argument
+		int 021h	;write command line to stderr
+		jc exit	;exit if error
+		pull cx	;load column offset
+
+		;calculate column with error
+
+		mov ax,cs	;copy segment to workspace
+		mov ds,ax
+		mov es,ax
+		mov dx,081h	;load offset to buffer
+		mov di,dx
+		mov al,020h	;load space char
+		mov bx,cx	;save count
+		inc bx	;add one for caret marker
+
+		;write spaces and marker to buffer
+
+		rep
+		stosb
+		mov al,'^'	;store marker
+		stosb
+		mov ax,0a0dh	;store carriage return and line feed
+		stosw
+		stosw
+
+		;write caret pointer under command tail where error is
+
+		mov ah,040h	;load function argument
+		mov cx,bx	;load byte count
+		add cx,4
+		mov bx,stderr	;load handle
+		int 021h	;output line to standard output
+		jc exit	;exit if error
+
+		;write error message
+
+exit_e:
+		mov bx,cs	;load segment to code
+		mov ds,bx
+		pull dx	;load offset to string
+		mov ah,9	;load function parameter
+		int 021h	;write error message to screen
+exit:
+		mov al,b sorting_flags	;load error code
+		mov ah,04c	;load function parameter
+		int 021h	;exit with error code
+
+		;convert string to value
+
+get_val:
+		pull si	;load return address
+		lodsw	;load destination variable
+		mov bx,ax
+		push si	;save return address
+		mov si,di	;load offset to next character
+		mov w[bx],0	;initialize result
+
+		;check if character is digit
+
+b1:
+		jcxz ret	;exit if no more command line
+		lodsb	;load character from file
+		cmp al,'0'	;is character below ascii 0?
+		jb ret	;exit if it is
+		cmp al,'9'	;is character above ascii 9?
+		ja ret	;exit if it is
+		dec cx
+		sub al,'0'	;unasciize character
+		cbw	;sign extend
+
+		;multiply result by ten
+
+		mov dx,w[bx]	;load it
+		shl dx,1	;multiply it by 4
+		shl dx,1
+		add dx,w[bx]	;add it by one
+		shl dx,1	;multiply it by 2
+		mov w[bx],dx	;store it
+		add w[bx],ax	;add it to result
+		jmp b1	;multiply by ten
+
+		;get ascii or control code characters
+
+get_chars:
+		dec si	;move offset back
+		inc cx
+		mov dl,'@'	;indicate not in quotes
+b1:
+		or bp,bp	;anymore chars needed?
+		je ret	;exit if not
+		lodsb	;load next character
+		cmp al,027h	;is character single quote?
+		jne >a1	;store character if not
+		xor dl,'@'	;toggle base
+		jmp >a2	;move to next character
+
+		;store character in separator buffer
+
+a1:
+		sub al,dl	;take away base if inside quotes
+		stosb	;store character in buffer
+		dec bp	;decrement maximum char count?
+a2:
+		or dl,dl	;are we inside quotes?
+		loope b1	;read next character if yes
+		jcxz ret	;exit if end of com tail
+
+		;check if end of argument
+
+		dec di	;move offset back one char
+		inc bp
+		cmp al,'/'+-64	;is char argument marker?
+		je ret	;exit if yes
+		cmp al,020h+-64	;is next char a space?
+		je b1	;read next character if it is
+		inc di	;count last char written
+		dec bp
+		jmp b1	;read next char
+
+		;make character upper case if it is lower case
+
+check_case:
+		cmp al,'a'	;is char lower case?
+		jb ret	;load sort flags if not
+		cmp al,'z'	;is char lower case?
+		ja ret	;exit if not
+		and al,05fh	;make char upper case
+		ret	;exit
+
+		;convert segment:offset (ax:si) to 20 bit address
+
+ptr_addr_ds:
+		mov ax,ds	;load segment
+ptr_addr:
+		xor dx,dx	;clear high order nibble of source addr
+		shl ax,1	;store high order nibble of segment
+		rcl dl,1	;value into al
+		shl ax,1
+		rcl dl,1
+		shl ax,1
+		rcl dl,1
+		shl ax,1
+		rcl dl,1
+		add ax,si	;calculate low word of address
+		adc dl,dh	;add carry to high order nibble
+		ret	;return
+
+		;convert segment:offset to 20 bit address
+
+ptr_addr_esdi:
+		mov ax,es	;load segment
+ptr_addr_di:
+		xor dx,dx	;clear high order nibble of source addr
+		shl ax,1	;store high order nibble of segment
+		rcl dl,1	;value into al
+		shl ax,1
+		rcl dl,1
+		shl ax,1
+		rcl dl,1
+		shl ax,1
+		rcl dl,1
+		add ax,di	;calculate low word of address
+		adc dl,dh	;add carry to high order nibble
+		ret	;return
+
+		;convert 20 bit address into segment:offset format
+		;entry ax = low word and dx = segment nybble
+		;returns si = offset ax = segment
+
+addr_ptr:
+		mov si,dx
+		shl si,1	;shift low order nybble into high
+		shl si,1	;order nybble
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		shl si,1
+		xchg ax,si
+
+		;check if enough space above or below pointer offset
+
+range_check:
+		cmp si,0400h	;is there a reasonable margin above?
+		ja >a1	;check below if there is
+		cmp ax,0800h	;is segment big enough?
+		jb >a1	;check above if not
+		add si,08000h	;add 32k margin to offset
+		sub ax,0800h
+a1:
+		cmp si,0fc00h	;is there a reasonable margin below?
+		jb >a1	;store file pointer if there is
+		sub si,08000h	;subtract 32k margin
+		add ax,0800h
+a1:
+		ret	;exit
+
+		;range check si:ds
+
+range_check_ds:
+		mov ax,ds	;load segment
+		call range_check	;range check pointer
+		mov ds,ax
+		ret	;exit
+
+		;end
+

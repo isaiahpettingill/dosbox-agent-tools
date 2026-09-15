@@ -1,0 +1,892 @@
+;record sort version 1.1 copyright 1991-1999 andrew sprott. All rights reserved.
+
+		;exit with error
+
+field_err:
+		call sort_error	;exit with error
+		db 'Sort field not found$'
+
+		;sort file
+
+sort:
+		mov bp,w sorting_flags	;load sort flags
+		mov bx,w file_count	;load text block size
+		mov cx,w file_count+2
+		mov w shift_count,bx	;store it
+		mov w shift_count+2,cx
+		les di,w start_file	;load pointer to first item
+
+		;store address to start of first item
+
+b1:
+		call ptr_addr_esdi	;convert to 20 bit address
+		mov w start_of_item,ax	;save it
+		mov w start_of_item+2,dx
+		call load_count_di	;load remaining characters
+		jcxz >c1	;sort data if end of block
+
+		;check if sorting paragraphs
+
+		mov ax,0dh	;load carriage return code
+		cwd	;load field separator count
+		mov bx,-1	;clear offset
+		test bp,o para_bit	;is sort by paragraph/lines?
+		jne >a1	;search for end of paragraph if it is
+		mov ax,w field_marker	;load field delimiter code
+		test bp,o field_bit	;is sort by fields?
+		jne >a3	;search for end of field if it is
+		mov al,ah	;load record delimiter code
+		test bp,o record_bit	;is sort by records?
+		je >a2	;check for word search if not
+
+		;search for item delimiter
+
+a1:
+		repne
+		scasb	;is separator found?
+		je >a5	;write pointer and count to array if yes
+		mov si,ax	;save search char
+		call load_count_di	;load remaining characters
+		mov ax,si	;restore search char
+		jcxz >c1	;sort data if end of block
+		jmp a1	;carry on with search
+c1:
+		jmp long >c3	;sort data
+
+		;search for end of field/record
+
+a3:
+		mov bx,-1	;load sub offset
+a3:
+		scasb
+if ne	es	cmp ah,b[di+bx]	;is there a match?
+		loopne a3	;decrement loop count
+		je >a4	;write pointer and count to array
+		mov si,ax	;save search char
+		call load_count_di	;load remaining characters
+		mov ax,si	;restore search char
+		jcxz c1	;sort data if end of block
+		jmp a3	;carry on with search
+
+		;save pointer to start of separator/delimiter
+
+a4:
+		inc dx	;indicate one separator char
+a5:
+		jcxz >a1	;save pointer to separators if eof
+		test bp,o line_feed_bit	;check for line feed?
+		jne >a1	;save pointer to separators if not
+	es	cmp b[di+bx],0dh	;is separator carriage return?
+		jne >a1	;save pointer to separators if not
+	es	cmp b[di],0ah	;is separator carriage return?
+		jne >a1	;save pointer to separators if not
+		inc di	;move offset past line feed
+		dec cx	;decrement count
+		or dx,dx	;are we sorting fields?
+if ne		inc dx	;add one to field separators if yes
+
+		;save pointer to field separators
+
+a1:
+		sub di,dx	;move destination offset over separators
+		mov w start_of_sep,di	;save it
+		mov w start_of_sep+2,es
+		mov w field_sep_count,dx	;indicate one separator char
+		jmp long >b3	;write field pointer data to array
+
+		;check if searching for next word separator
+
+a2:
+		test bp,o word_bit	;are we?
+if e		jmp long >c2	;sort characters if not
+a1:
+		mov si,di	;load char
+a4:
+		mov bx,si	;save pointer to end of separators
+		mov dx,es
+	es	lodsb	;load char at start of first item
+
+		;check if character is word separator
+
+		call is_chr_separator	;is it a separator?
+		jne >a3	;move to end of word if not
+		add w start_of_item,1	;increment address to word
+		adc w start_of_item+2,0
+		loop a4	;check it out
+		call load_count	;load remaining characters
+		jcxz c1	;sort data if end of block
+		jmp a1	;carry on with search
+
+		;move to end of word
+
+a1:
+		call load_count	;load remaining characters
+		jcxz >a2	;sort data if end of block
+		mov si,di	;load offset to item
+a3:
+	es	lodsb	;load char at start of first item
+		call is_chr_separator	;is it a separator?
+		loopne a3	;load next char if not
+		mov di,si
+		jne a1	;refresh if loop count zero
+
+		;write size of last separator string to array
+
+a2:
+		mov si,bx	;load pointer to end of separators
+		mov ax,dx
+		call ptr_addr	;convert to 20 bit address
+		sub ax,w start_of_sep_addr	;calculate string size
+		sbb dx,w start_of_sep_addr+2
+		lds si,w leading_seps	;load pointer to last element
+		mov w[si],ax	;store last separator size
+		mov w[si+2],dx
+
+		;store pointer and address to start of separators
+
+		mov ds,ax,cs	;restore data segment
+		dec di	;move offset over first separator
+		mov w start_of_sep,di	;save it
+		mov w start_of_sep+2,es
+		call ptr_addr_esdi	;convert to address
+		mov w start_of_sep_addr,ax	;save it
+		mov w start_of_sep_addr+2,dx
+
+		;check if enough memory to add item pointer to array
+
+b3:
+		mov ax,w pointer_size	;load element size
+		cwd
+		sub w free_memory,ax	;take it away from free space
+		sbb w free_memory+2,dx
+		cmp w free_memory+2,dx	;is there?
+		jne >a1	;calculate item size if there is
+		cmp w free_memory,256	;is there enough memory?
+		ja >a1	;calculate item size if there is
+		jmp memory_err	;exit with error
+
+		;calculate size of item
+
+a1:
+		add w shift_count,cx	;clear cx
+		adc w shift_count+2,dx
+		call ptr_addr_esdi	;convert pointer to address
+		mov bx,ax	;save it
+		mov cx,dx
+		mov ax,w start_of_item	;load address to start of item
+		mov dx,w start_of_item+2
+		sub bx,ax	;calculate size of item
+		sbb cx,dx
+		call addr_ptr	;convert to pointer format
+		push ax,si	;save pointer
+
+		;write count and pointer to array
+
+		lds si,w pointer_array_write	;load pointer to top of array
+		call range_check_ds
+	cs	sub si,w pointer_size	;move to next free space
+		pull w[si]	;write pointer to item to array
+		pull w[si+2]
+		mov w[si+4],bx	;write item size to array
+		mov w[si+6],cx
+
+		;write address to separators if sorting by words
+
+		test bp,o word_field_bit	;is sort by words or fields?
+		je >a1	;save pointer to array if not
+	cs	mov bx,w start_of_sep	;copy address to separators
+		mov w[si+8],bx
+	cs	mov bx,w start_of_sep+2
+		mov w[si+10],bx
+
+		;save pointer to offset to separator length
+
+		lea bx,[si+12]	;save pointer to separator length
+	cs	mov w leading_seps,bx
+	cs	mov w leading_seps+2,ds
+		test bp,o field_bit	;is sort by fields?
+		je >a1	;save pointer to array if not
+	cs	mov cx,w field_sep_count	;load separator count
+		mov w[bx],cx	;store one for field separator
+		mov w[bx+2],0
+		add di,cx	;move offset past marker
+
+		;save pointer to array
+
+a1:
+		mov ds,bx,cs	;copy code segment
+		mov w pointer_array_write,si	;save offset to array
+		mov w pointer_array_write+2,ax	;save segment to array
+		jmp b1	;search for next item
+
+		;decrement outer loop count (character sort)
+
+c2:
+		mov ax,w file_count	;load size of text block
+		mov dx,w file_count+2
+		sub ax,1	;decrement it
+		sbb dx,0
+		mov w file_count,ax	;save it
+		mov w file_count+2,dx
+		mov w shift_count,ax	;save inner loop count
+		mov w shift_count+2,dx
+		or ax,dx	;is there anything to sort?
+		je ret	;update screen if not
+
+		;load pointers to text in document
+
+		mov b swap_flag,0	;indicate nothing swapped
+		lds si,w start_file	;load pointer to start of text
+		mov ax,ds
+		mov es,ax
+		mov di,si
+		inc di
+
+		;compare each adjacent characters
+
+b2:
+		call load_cx	;load count
+		jcxz >b4	;check if anything swapped if zero
+		call range_check_pointers	;range check offsets
+b3:
+		call compare	;compare characters
+		je b2	;check if anymore to sort if zero
+		jb >a1	;check if sort is ascending if below
+		test bp,o order_bit	;is order descending?
+		jne >a4	;compare next char if it is
+		jmp >a2	;swap chars if not
+a1:
+		test bp,o order_bit	;is order ascending?
+		je >a4	;compare next char if it is
+
+		;swap characters
+
+a2:
+		mov al,b[si]	;load second char
+		xchg al,b[si+0ffffh]	;swap it with first char
+		mov b[si],al
+	cs	or b swap_flag,1	;indicate swap taken place
+a4:
+		inc cx	;add one for last char compared
+		loop b3	;decrement loop count
+		jmp b2	;check if anymore to sort
+
+		;goto start of outer loop
+
+b4:
+		mov ax,cs	;copy segment to static workspace
+		mov ds,ax
+		test b swap_flag,1	;was anything swapped?
+		jne c2	;decrement outer loop count if yes
+		ret	;write sorted file to disk
+
+		;sort items
+
+c3:
+		les si,w pointer_array_read	;load pointer to top of array
+		mov ax,es
+		call ptr_addr	;convert it to address
+		mov bx,ax	;save it
+		mov cx,dx
+		les si,w pointer_array_write	;load pointer to last pointer in array
+		mov ax,es
+		call ptr_addr	;convert it to address
+
+		;calculate number of pointers in array
+
+		sub bx,ax	;calculate number of pointers in array
+		sbb cx,dx
+		mov ax,cx
+		or cx,cx	;is there anything to sort?
+		jne >a1	;calculate number of records if yes
+		cmp bx,2	;are there more than 1 records
+		jb ret	;exit if not
+
+		;calculate loop count for sort
+
+a1:
+		mov cx,3	;assume record size is 8
+		cmp w pointer_size,16	;is it?
+if e		inc cx	;record size is sixteen if not
+a1:
+		shr ax,1	;divide array size by 2
+		rcr bx,1
+		loop a1	;decrement loop count
+
+		;save loop count
+
+		mov w outer_sort_count,bx	;save count
+		mov w outer_sort_count+2,ax
+		mov w record_count,bx
+		mov w record_count+2,ax
+
+		;start of sorting loop
+
+b1:
+		mov ax,w outer_sort_count	;load outer loop count
+		mov dx,w outer_sort_count+2
+		shr dx,1	;half it
+		rcr ax,1
+		mov w outer_sort_count,ax	;save outer loop count
+		mov w outer_sort_count+2,dx
+		mov cx,ax	;anything to sort?
+		or cx,dx
+if e		jmp rearrange	;rearrange text if not
+
+		;calculate offset into array for first pointer
+
+b4:
+		mov w middle_sort_count,ax	;save middle loop count
+		mov w middle_sort_count+2,dx
+		sub ax,w outer_sort_count	;take away gap
+		sbb dx,w outer_sort_count+2
+		mul w pointer_size	;multiply by record size
+		mov bx,ax	;save offset
+		mov cx,dx
+
+		;calculate source and destination pointers
+
+		les si,w pointer_array_read	;copy pointer to top of array
+		mov ax,es	;connvert pointer to address
+		call ptr_addr	
+		sub ax,bx	;take away offset into array
+		sbb dx,cx
+		call addr_ptr	;convert back to pointer
+		sub si,w pointer_size	;move to first item pointer
+		mov w pointer_array_write,si
+		mov w pointer_array_write+2,ax
+
+		;load pointers from array (start of inner loop)
+
+b2:
+		and b swap_flag,01eh	;indicate nothing swapped
+		les ax,w outer_sort_count	;load gap (bytes)
+		mov dx,es
+		mul w pointer_size	;convert to records
+		mov bx,ax	;save offset
+		mov cx,dx
+		lds di,w pointer_array_write	;load pointer to array
+
+		;calculate pointer to second item
+
+		mov ax,ds	;convert it to address
+		call ptr_addr_di
+		sub ax,bx	;add gap
+		sbb dx,cx
+		call addr_ptr	;convert to pointer
+		xchg si,di	;swap offsets
+		mov es,ax	;load segment to second string
+
+		;check size of first item
+
+		mov cx,w[si+4]	;load count of first item
+		mov bx,w[si+6]
+	es	mov ax,w[di+4]	;load count of second item
+	es	mov dx,w[di+6]
+
+		;save sizes of both records
+
+	cs	mov w record_pointer_si,si	;save pointer to first string
+	cs	mov w record_pointer_si+2,ds
+	cs	mov w record_pointer_di,di	;save pointer to second string
+	cs	mov w record_pointer_di+2,es
+
+		;check which of the two items is shortest
+
+		cmp bx,dx	;is first string smaller?
+		jb >a1	;compare strings if it is
+		ja >a2	;load count if second item if above
+		cmp cx,ax	;is first string equal or smaller?
+		jb >a1	;compare strings if it is
+		ja >a2	;indicate above
+	cs	or b swap_flag,040h	;indicate strings same length
+		jmp >a1	;compare strings
+
+		;load count from second string
+
+a2:
+		xchg cx,ax	;load second record size
+		xchg bx,dx
+	cs	or b swap_flag,080h	;indicate second string is smaller
+		test bp,t_bit	;is sort by translation table?
+		je >a1	;load pointers to strings if not
+		xchg si,di	;swap offsets
+		push es,ds	;swap segments
+		pop es,ds
+
+		;save pointers to records
+
+a1:
+	cs	mov w size_record1,cx	;save it
+	cs	mov w size_record1+2,bx
+	cs	mov w size_record2,ax	;save it
+	cs	mov w size_record2+2,dx
+	cs	mov w biggest_size,ax	;save size of biggest string
+	cs	mov w biggest_size+2,dx
+
+		;load pointers to strings
+
+	es	les di,w[di]	;load pointer to second string
+		lds si,w[si]	;load pointer to first string
+		test bp,o record_bit	;are we sorting by records?
+		je >a1	;compare blocks if not
+	cs	mov dx,w sort_field	;is there a field offset
+		or dx,dx
+		jne >a2	;move to field if there is
+
+		;check if record is void
+
+a1:
+		jmp long >c4	;compare items if not
+
+		;copy count for record 1
+
+a2:
+		mov ax,cx	;copy smaller sized item
+		or ax,bx	;is record void?
+		je a1	;delete it if it is
+	cs	mov ax,w size_record1	;copy count
+	cs	mov w shift_count,ax
+		mov cx,ax	;save low word
+	cs	mov ax,w size_record1+2
+	cs	mov w shift_count+2,ax
+		or cx,ax	;is record void?
+if e		mov dx,1	;don't bother finding field if it is
+
+		;move ds:si pointer to nth field
+
+		push si,ds	;save pointer to first field
+a4:
+		call load_count_sidi	;load loop count
+		jcxz >e2	;move to next record if zero
+a2:
+	cs	mov bl,b field_marker	;load field separator char
+a3:
+		lodsb	;load char from record
+		cmp al,bl	;is it a field separator?
+		loopne a3	;load next char if not
+		jne a4	;load loop count if zero
+
+		;decrement field count
+
+		dec dx	;decrement field count
+		pull bx,ax	;load pointer to start of this field
+		je >a6	;move es:di to start of second field
+		push si,ds	;save offset to next field
+		jcxz a4	;load count if zero
+		jmp a2	;move to end of next field
+e2:
+		pull bx,ax	;restore pointer to start of last field
+		dec dx	;is it end of record?
+		jne >e3	;write error message if not
+
+		;calculate field count for record 1
+
+a6:
+		mov cx,ax	;save offset to end of field
+		call ptr_addr_ds	;convert to 20 bit address
+		mov si,cs	;copy code segment
+		mov ds,si
+		mov w size_record1,ax	;save it
+		mov w size_record1+2,dx
+
+		;subtract address to start of field from address to end
+
+		mov ax,bx	;load pointer to start of field
+		mov si,cx
+		call ptr_addr	;convert to 20 bit address
+		sub w size_record1,ax	;save it
+		sbb w size_record1+2,dx
+		mov si,cx	;load source field pointer
+		mov ds,bx
+
+		;copy record 2 byte count
+
+	cs	mov ax,w size_record2	;copy count
+	cs	mov w shift_count,ax
+		mov cx,ax	;save low word
+	cs	mov ax,w size_record2+2
+	cs	mov w shift_count+2,ax
+
+		;check if record is void
+
+	cs	mov dx,w sort_field	;load field offset
+		or cx,ax	;is record void?
+if e		mov dx,1	;don't bother finding field if it is
+
+		;move es:di pointer to nth field
+
+		push di,es	;save pointer to start of second record
+a5:
+		call load_count_sidi	;load loop count
+		jcxz >e1	;move to next record if zero
+a2:
+	cs	mov al,b field_marker	;load field delimiter
+		repne
+		scasb
+		jne a5	;load loop count if zero
+
+		;decrement field count
+
+a4:
+		dec dx	;decrement field count
+		pull bx,ax
+		je >a4	;compare fields if field found
+		push di,es	;save pointer to next field
+		jcxz a5	;load count if zero
+		jmp a2	;move to end of next field
+
+		;write field not found error message
+
+e1:
+		pull bx,ax	;restore pointer to start of last field
+		dec dx	;is it end of record?
+		je >a4	;check if second field is smaller if yes
+e2:
+		mov si,di	;copy pointer
+		mov ax,es
+		mov ds,ax
+
+		;calculate pointers to text
+
+e3:
+		mov w sorting_flags,-1	;store error code
+		call ptr_addr_ds	;convert to address
+		mov bx,cs	;copy segment to workspace
+		mov ds,bx
+		mov es,bx
+		mov bp,w columns	;subtract half screen width from offset
+		mov cx,bp	;save screen width
+		shr bp,1
+		sub ax,bp
+		sbb dx,0
+
+		;check if address is before file
+
+		mov bx,w start_file_addr	;load address to start of file
+		mov di,w start_file_addr+2
+		cmp dx,di	;is it before start of file?
+		jb >a2	;load address to start of file if it is
+		ja >a1	;write error if not
+		cmp ax,bx	;is it before start of file?
+		ja >a1	;write error if not
+
+		;calculate address from start of file
+
+a2:
+		sub bx,ax	;take away address before
+		sbb di,dx
+		add ax,bx	;load address to start of file
+		adc dx,di
+		sub bp,bx	;calculate error offset
+
+		;load pointers to error record
+
+a1:
+		mov bx,w end_file	;load address to end of file
+		mov di,w end_file+2
+		sub bx,ax	;calculate distance to end of file
+		sbb di,dx
+		sub bx,cx	;will file spill to next line?
+		sbb di,0
+if c		add cx,bx	;calculate column for end of file if yes
+		call addr_ptr	;convert address back to pointer
+		mov ds,ax
+		mov es,ax
+
+		;calculate pointer to centre of error line
+
+		add bp,si	;calculate offset to error
+		add cx,si	;calculate offset to end of line
+		xchg si,bp
+		sub cx,bp	;calculate string size
+		mov bl,64	;add 64 to zero bytes
+		call close_files	;close output file
+		jmp field_err	;exit with error
+
+		;calculate field count for record 1
+
+a4:
+		mov cx,ax	;save offset to end of field
+		call ptr_addr_esdi	;convert to 20 bit address
+	cs	mov w size_record2,ax	;save it
+	cs	mov w size_record2+2,dx
+
+		;subtract address to start of field from offset to end
+
+		mov ax,bx	;load pointer to start of field
+		mov di,cx
+		call ptr_addr_di	;convert to 20 bit address
+	cs	sub w size_record2,ax	;save it
+	cs	sbb w size_record2+2,dx
+		mov di,cx	;load source field pointer
+		mov es,bx
+
+		;load byte counts of each field
+
+	cs	mov cx,w size_record1	;copy size of smallest field
+	cs	mov bx,w size_record1+2
+	cs	mov ax,w size_record2
+	cs	mov dx,w size_record2+2	;load high nybble of second field
+
+		;check if pointer was swapped
+
+	cs	test b swap_flag,080h	;were pointers swapped?
+		je >a1	;check sizes if not
+		test bp,t_bit	;is sort by translation table?
+		je >a1	;load pointers to strings if not
+		xchg si,di	;swap offsets
+		push es,ds	;swap segments
+		pop es,ds
+
+		;check which record is smaller
+
+a1:
+	cs	mov b swap_flag,0	;clear flag
+		cmp bx,dx	;is first field smaller?
+		jb >a1	;compare fields if it is
+		ja >a2	;load count of second field if above
+		cmp cx,ax	;is first field smaller?
+		jb >a1	;compare strings if it is
+		ja >a2	;indicate above
+	cs	mov b swap_flag,040h	;indicate strings same length
+		jmp >a1	;compare strings
+
+		;swap pointers
+
+a2:
+	cs	mov b swap_flag,080h	;indicate second string is smaller
+		xchg cx,ax	;load size of second field
+		xchg bx,dx
+		test bp,t_bit	;is sort by translation table?
+		je >a1	;load pointers to strings if not
+		xchg si,di	;swap offsets
+		push es,ds	;swap segments
+		pop es,ds
+
+		;store sizes
+
+a1:
+	cs	mov w biggest_size,ax	;save size of biggest string
+	cs	mov w biggest_size+2,dx
+
+		;check if one or both items are wiped
+
+c4:
+		mov ax,cx	;is smallest item zero
+		or ax,bx
+		je >a6	;move on if it is
+		test bp,o t_bit	;is sort with translation table?
+		jne >a2	;compare strings if it is
+		test bp,o size_bit	;are we?
+		je >a1	;compare strings if not
+
+		;check if items are equal
+
+	cs	test b swap_flag,040h	;are strings equal length?
+		jne >a1	;compare them if they are
+	cs	test b swap_flag,080h	;is first string smaller?
+		je >a7	;check order if it is
+		jmp >a3	;check order of sort
+
+		;check if second string is zero
+
+a6:
+	cs	test b swap_flag,080h	;is first item smaller?
+if e		jmp long >b3
+		test bp,o word_bit	;sorting by words?
+if ne		call move_word_records	;move records
+		jmp >a9	;swap record
+
+		;compare strings
+
+a2:
+		call check_for_cr	;check for word of field delimiter
+a2:
+		call load_count_sidi	;load count
+		jcxz >b5	;check if first item is smaller
+		call compare_t	;compare strings using translation table
+		jb >a8	;check if pointers swapped
+		je a2	;compare another batch if end of segment
+
+		;check if pointers were swapped
+
+	cs	test b swap_flag,080h	;were they?
+		jne >a7	;indicate first string below if yes
+		jmp >a3	;indicate second string below
+a8:
+	cs	test b swap_flag,080h	;were pointers swapped
+		jne >a3	;indicate second string below if yes
+		jmp >a7	;indicate first string below
+
+		;decrement count if item has a delimiter at end
+
+a1:
+		call check_for_cr	;check for word of field delimiter
+a1:
+		call load_count_sidi	;load count
+		jcxz >a6	;check sizes if match
+		call compare	;compare items
+		je a1	;compare next block if all bytes match
+
+		;check if pointers need swapping
+
+		jb >a7	;check order flag if string is lower
+a3:
+		test bp,o order_bit	;is sort in descending order?
+		je >a9	;swap array pointers if not
+a10:
+		jmp long >b3	;move to next pointer if it is
+b5:
+		jmp >b5	;check if stripping duplicate items
+
+		;check if both items are equal size
+
+a6:
+	cs	test b swap_flag,080h	;is first item smaller?
+		jne a3	;check if descending order if not
+	cs	test b swap_flag,040h	;are items equal length?
+		jne >b5	;move to next item if they are
+a7:
+		test bp,o order_bit	;is sort in ascending order?
+		je a10	;move to next array pointer if yes
+a9:
+		call swap_pointers	;swap item pointers
+
+		;decrement inner loop count
+
+b6:
+		mov ax,cs	;copy segment to static workspace
+		mov ds,ax
+		les si,w pointer_array_read	;load pointer to start of array
+		mov ax,es
+		call ptr_addr	;convert to address
+		sub ax,w pointer_size	;move it over first record
+		sbb dx,0
+		mov bx,ax	;save it
+		mov cx,dx
+
+		;calculate gap between current record and first
+
+		les si,w pointer_array_write	;load pointer to current record
+		mov ax,es
+		call ptr_addr	;convert to address
+		sub bx,ax	;calculate number of records inbetween
+		sbb cx,dx
+		les ax,w outer_sort_count	;load outer loop gap
+		mov dx,es
+		mul w pointer_size	;convert to records
+
+		;move back to next string
+
+		sub bx,ax	;subtract gap
+		sbb cx,dx
+		jc >a1	;goto middle loop if start of array
+		add w pointer_array_write,ax	;move pointer to item back by gap
+		adc w pointer_array_write+2,dx
+		jmp b2
+
+		;if delete duplicate records option is set then ignore this item
+
+b5:
+		test bp,duplicate_bit	;ignore this item?
+		je >b3	;move to next pointer if not
+	cs	lds si,w record_pointer_si	;load pointer to string 1
+		xor ax,ax	;load zero
+		cwd
+		xchg w[si+4],ax	;clear count of string
+		xchg w[si+6],dx
+		mov cx,w[si+12]	;load size of seperators
+		mov bx,w[si+14]
+
+		;update counts
+
+		mov ds,si,cs	;copy segment to workspace
+		add w skip_count,1	;increment void record count
+		adc w skip_count+2,0
+		add w skip_file,ax	;add to void data count
+		adc w skip_file+2,dx
+
+		;check if sorting words
+
+		test bp,o word_bit	;are we?
+		je b6	;move to next record if not
+		add w skip_file,cx	;add to total
+		adc w skip_file+2,bx
+		jmp b6	;rejoin swapping loop
+
+		;decrement middle loop count
+
+b3:
+		mov ax,cs	;copy segment to workspace
+		mov ds,ax
+a1:
+		les ax,w middle_sort_count	;load inner loop count
+		mov dx,es
+		add ax,1	;move to next record
+		adc dx,0
+
+		;check if middle loop finished
+
+		cmp dx,w record_count+2	;end of middle loop?
+		jb >a1	;goto start of loop if not
+		ja >a2	;goto outer loop if above
+		cmp ax,w record_count	;end of middle loop?
+		jae >a2	;goto outer loop if it is
+a1:
+		jmp b4	;goto start of middle loop
+a2:
+		jmp b1	;goto outer loop
+
+		;move word separators up over void record
+
+		ret	;exit
+move_word_records:
+	cs	lds si,w record_pointer_si	;load pointer to string 1
+	cs	les di,w record_pointer_di	;load pointer to string 2
+		call ptr_addr_ds	;convert first string pointer to address
+		mov cx,ax	;save it
+		mov bx,dx
+		call ptr_addr_esdi	;convert pointer to second string
+		sub cx,ax	;calucalte gap between records
+		sbb bx,dx
+
+		;calculate pointers
+
+	cs	add ax,w pointer_size	;add size of pointer
+		adc dx,0
+		call addr_ptr	;convert to pointer
+		mov ds,ax
+
+		;copy separator record
+
+a6:
+	cs	sub cx,w pointer_size	;move pointer up
+		sbb bx,0
+		jc ret	;swap pointers
+		mov ax,w[si+8]	;copy pointer to seperator
+	es	mov w[di+8],ax
+		mov ax,w[si+10]
+	es	mov w[di+10],ax
+
+		;copy size of seperator
+
+		mov ax,w[si+12]	;copy size of seperator
+	es	mov w[di+12],ax
+		mov ax,w[si+14]
+	es	mov w[di+14],ax
+
+		;move to next pointer
+
+		call range_check_ds	;range check pointer to next record
+	cs	add si,w pointer_size	;move to next pointer
+		mov ax,es	;copy segment to top record
+		xchg si,di	;swap pointers
+		call range_check	;range check pointer
+		xchg si,di
+		mov es,ax
+	cs	add di,w pointer_size
+		jmp a6	;check next record
+
+		;end
+

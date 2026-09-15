@@ -1,0 +1,22 @@
+FROM debian:bookworm-slim
+
+ARG OW_URL=https://github.com/open-watcom/open-watcom-v2/releases/download/Current-build/ow-snapshot.tar.xz
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /opt/watcom && \
+    curl -fsSL "$OW_URL" -o /tmp/watcom.tar.xz && \
+    tar -xJf /tmp/watcom.tar.xz -C /opt/watcom && \
+    rm /tmp/watcom.tar.xz
+
+ENV WATCOM=/opt/watcom
+ENV PATH=/opt/watcom/binl64:/opt/watcom/binl:/opt/watcom/binw:$PATH
+ENV INCLUDE=/opt/watcom/h
+ENV EDPATH=/opt/watcom/eddat
+ENV WIPFC=/opt/watcom/wipfc
+
+RUN command -v wcl && command -v wcc && command -v wlink
+
+WORKDIR /work

@@ -1,0 +1,18 @@
+[submodule "third_party/dwed"]
+	path = third_party/dwed
+	url = https://github.com/DosWorld/dwed.git
+[submodule "third_party/libsystem2"]
+	path = third_party/libsystem2
+	url = https://github.com/DosWorld/libsystem2.git
+[submodule "third_party/c--sphinx"]
+	path = third_party/c--sphinx
+	url = https://github.com/jossk/c--sphinx.git
+[submodule "third_party/dos_compilers"]
+	path = third_party/dos_compilers
+	url = https://github.com/davidly/dos_compilers.git
+[submodule "third_party/edit-freedos"]
+	path = third_party/edit-freedos
+	url = https://gitlab.com/FreeDOS/base/edit-freedos.git
+[submodule "third_party/naied"]
+	path = third_party/naied
+	url = https://github.com/Kagamma/naied.git

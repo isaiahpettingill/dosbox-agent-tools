@@ -1,0 +1,9 @@
+* text=auto
+Makefile text eol=lf
+**/Makefile text eol=lf
+*.mk text eol=lf
+containers/** text eol=lf
+*.sh text eol=lf
+*.BAT text eol=crlf
+# Preserve vendored DOS distributions byte-for-byte.
+third_party/** -text -whitespace

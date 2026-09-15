@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+import hashlib
+import sys
+from pathlib import Path
+
+from PIL import Image, ImageOps
+
+
+ASCII = "@%#*+=-:. "
+
+
+def make_ascii(source_dir, output_dir):
+    source = Path(source_dir)
+    output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    resampling = getattr(Image, "Resampling", Image).LANCZOS
+    images = sorted(
+        path for path in source.iterdir()
+        if path.suffix.lower() in {".jpg", ".jpeg", ".png"}
+    )
+    if not images:
+        raise SystemExit("no raster images found")
+
+    for path in images:
+        with Image.open(path) as image:
+            if image.mode in {"RGBA", "LA"}:
+                background = Image.new("RGBA", image.size, "white")
+                image = Image.alpha_composite(background, image.convert("RGBA"))
+            image = ImageOps.fit(image.convert("L"), (80, 30), method=resampling)
+            rows = []
+            for row in range(30):
+                rows.append("".join(
+                    ASCII[pixel * len(ASCII) // 256]
+                    for pixel in (image.getpixel((column, row)) for column in range(80))
+                ))
+        (output / (path.stem + ".TXT")).write_text(
+            "\r\n".join(rows) + "\r\n", encoding="ascii", newline=""
+        )
+
+
+def make_noise(output_path, size):
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    remaining = int(size)
+    counter = 0
+    with path.open("wb") as output:
+        while remaining:
+            block = hashlib.sha256(
+                b"ENCRYPT FLOPPY DETERMINISTIC NONSENSE" + counter.to_bytes(8, "little")
+            ).digest()
+            output.write(block[:remaining])
+            remaining -= len(block)
+            counter += 1
+
+
+def main():
+    if len(sys.argv) < 2:
+        raise SystemExit("usage: asset-tools ascii INPUT_DIR OUTPUT_DIR | noise OUTPUT SIZE")
+    if sys.argv[1] == "ascii" and len(sys.argv) == 4:
+        make_ascii(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == "noise" and len(sys.argv) == 4:
+        make_noise(sys.argv[2], sys.argv[3])
+    else:
+        raise SystemExit("invalid asset-tools arguments")
+
+
+if __name__ == "__main__":
+    main()
